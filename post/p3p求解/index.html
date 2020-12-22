@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="zh-hans">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.79.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>P3P求解 - </title>
+    <meta property="og:title" content="P3P求解 - ">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2020-12-08T14:03:43&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2020-12-08T14:03:43&#43;08:00">
+        
+    <meta name="description" content="P3P算法的求解过程
+">
+        
+    <meta name="author" content="">
+    <meta property="og:url" content="https://lxli1996.github.io/post/p3p%E6%B1%82%E8%A7%A3/">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    </head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://lxli1996.github.io">
+                        
+                    </a>
+                
+                
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://lxli1996.github.io">首页</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">P3P求解</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2020年12月8日
+                            14:03
+                        </date>
+                        
+                        <div class="post-meta meta-category">
+                            ，归类于
+                            
+                                <a href="/categories/%E8%A7%86%E8%A7%89">视觉</a>
+                            
+                        </div>
+                        <aside id="toc" class="dismissed">
+                            <span class="toc-title">目录 <a href="#" class="toc-dismiss"></a></span>
+                            <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#代码实现">代码实现</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+                        </aside><div class="post-content">
+                            <p>PnP(Perspective-n-Point)是求解3D到2D点对运动方法，它描述了当知道$N$个3D空间点及其投影位置时，如何估计相机位姿。而P3P问题，即给出空间中3个点的位置及其投影位置，求解相机位姿。一个示意图如下图所示：</p>
+<p><img src="https://i.loli.net/2020/11/20/2SC7uEv5KOJT3VM.png" alt="p3p.png"></p>
+<p>P3P的求解是从余弦定理开始的，设相机坐标中心为点$P$，$A$、$B$和$C$是不共线的3个3D点，$D$为验证3D点，根据余弦定理有如下公式：
+$$
+\begin{array}{l}P A^{2}+P B^{2}-2 \cdot P A \cdot P B \cdot \cos &lt;a, b&gt;=A B^{2} \\P A^{2}+P C^{2}-2 \cdot P A \cdot P C \cdot \cos &lt;a, c&gt;=A C^{2} \\P B^{2}+P C^{2}-2 \cdot P B \cdot P C \cdot \cos &lt;b, c&gt;=B C^{2}\end{array}
+$$
+对上式同除$PC^2$，并且设$y=\frac {PB}{PC}$，$x=\frac {PA}{PC}$。</p>
+<p>则有：
+$$
+\begin{array}{l}x^{2}+y^{2}-2 \cdot x \cdot y \cdot \cos &lt;a, b&gt;=\frac{A B^{2}}{P C^{2}} \\x^{2}+1-2 \cdot x \cdot \cos &lt;a, c&gt;=\frac{A C^{2}}{P C^{2}} \\y^{2}+1-2 \cdot y \cdot \cos &lt;b, c&gt;=\frac{B C^{2}}{P C^{2}}\end{array}
+$$
+设$u$、$v$和$w$分别为如下，并进行替换。
+$$
+u=\frac{A B^{2}}{P C^{2}}, v=\frac{B C^{2}}{A B^{2}}, w=\frac{A C^{2}}{A B^{2}}
+$$
+得：
+$$
+\begin{array}{l}x^{2}+y^{2}-2 \cdot x \cdot y \cdot \cos &lt;a, b&gt;=u \\x^{2}+1-2 \cdot x \cdot \cos &lt;a, c&gt;=w u \\y^{2}+1-2 \cdot y \cdot \cos &lt;b, c&gt;=v u\end{array}
+$$
+将上式中第一个式子带入第2和第3个式子，得：
+$$
+\begin{array}{l}(1-w) x^{2}-w \cdot y^{2}-2 \cdot x \cdot \cos &lt;a, c&gt;+2 \cdot w \cdot x \cdot y \cdot \cos &lt;a, b&gt;+1=0 \\(1-v) y^{2}-v \cdot x^{2}-2 \cdot y \cdot \cos &lt;b, c&gt;+2 \cdot v \cdot x \cdot y \cdot \cos &lt;a, b&gt;+1=0\end{array}
+$$
+在P3P问题中，3D到2D点的坐标是已知的，因此，$w, v, \cos &lt;a, c&gt;, \cos &lt;b, c&gt;, \cos &lt;a, b&gt;$都是已知量。$AB$，$BC$，$AC$可以通过输入的3D点进行求解，输入的2D点可以求解三个余弦值。</p>
+<p>首先根据2D坐标求解余弦值，将像素坐标变换到归一化坐标。
+$$
+a_{x}=\frac{a_{u}-c_{x}}{f_{x}} \\a_{y}=\frac{a_{v}-c_{y}}{f_{y}} \\a_{z}=1
+$$
+然后进行$L2$归一化过程(即数学上的归一化)：
+$$
+N_{a}=\sqrt{\left(a_{x}^{2}+a_{y}^{2}+a_{z}^{2}\right)} \\a_{x}^{\prime}=\frac{a_{x}}{N_{a}} \quad a_{y}^{\prime}=\frac{a_{y}}{N_{a}} \quad a_{z}^{\prime}=\frac{a_{z}}{N_{a}}
+$$
+因此可以获得余弦值：
+$$
+\cos &lt;\mathrm{a}^{\prime}, \mathrm{b}^{\prime}&gt;=a_{x}^{\prime} \cdot b_{x}^{\prime}+a_{y}^{\prime} \cdot b_{y}^{\prime}+c_{x}^{\prime} \cdot c_{y}^{\prime}
+$$
+$\cos &lt;\mathrm{b}^{\prime}, \mathrm{c}^{\prime}&gt;\quad \cos &lt;\mathrm{a}^{\prime}, \mathrm{c}^{\prime}&gt;$也是同理可求。</p>
+<p>然后根据3D坐标求解$AB$，$AC$和$BC$的值，以$AB$为例：
+$$
+A B=\sqrt{\left(\left(a_{x}-b_{x}\right)^{2}+\left(a_{y}-b_{y}\right)^{2}+\left(a_{z}-b_{z}\right)^{2}\right)}
+$$</p>
+<p>接下来求解二元二次方程，这个方程在数学上是可以求解的，需要用到Wu Ritt零点分解法，其中等效方程为：</p>
+<p>$$
+{\begin{array}{l}a_{4} x^{4}+a_{3} x^{3}+a_{2} x^{2}+a_{1} x^{1}+a_{0}=0 \b_{1} y-b_{0}=0\end{array}
+$$</p>
+<p>其中$a1$到$a4$都是已知的，因此可以求得x和y的值，4次方程理论上有4组解，但只有一组是合适的。在求得x和y的之后，就可以求取$PA$、$PB$、$PC$的值，根据下面公式，$AB$已知，可以先求出$PC$再求解$PB$和$PA$：
+$$
+x^{2}+y^{2}-2 \cdot x \cdot y \cdot \cos &lt;a, b&gt;=\frac{A B^{2}}{P C^{2}} \quad y=\frac{P B}{P C}, x=\frac{P A}{P C}
+$$
+我们需要的是$A$、$B$、$C$在相机坐标下的坐标，而不是$PA$、$PB$、$PC$的长度，因此还根据长度求取点的坐标，求解方法是利用向量公式：
+$$
+A=\vec{a} \cdot|P A|
+$$
+其中a是单位向量，$||PA||$是模值，因此获得$A$在相机坐标下的坐标。</p>
+<p>最后求得了A，B，C的坐标就可以通过世界坐标系到当前相机坐标的变换求解相机位姿，注意上面求得了4组解，这里需要使用D点确认哪组解是最合适的。</p>
+<h3 id="代码实现">代码实现</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">	<span style="color:#75715e">//像素坐标转变为归一化图像坐标；
+</span><span style="color:#75715e"></span>    mu0 <span style="color:#f92672">=</span> inv_fx <span style="color:#f92672">*</span> mu0 <span style="color:#f92672">-</span> cx_fx;
+    mv0 <span style="color:#f92672">=</span> inv_fy <span style="color:#f92672">*</span> mv0 <span style="color:#f92672">-</span> cy_fy;
+    <span style="color:#75715e">//归一化图像坐标归一化
+</span><span style="color:#75715e"></span>    norm <span style="color:#f92672">=</span> sqrt(mu0 <span style="color:#f92672">*</span> mu0 <span style="color:#f92672">+</span> mv0 <span style="color:#f92672">*</span> mv0 <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+    mk0 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.</span> <span style="color:#f92672">/</span> norm; mu0 <span style="color:#f92672">*=</span> mk0; mv0 <span style="color:#f92672">*=</span> mk0;
+
+    mu1 <span style="color:#f92672">=</span> inv_fx <span style="color:#f92672">*</span> mu1 <span style="color:#f92672">-</span> cx_fx;
+    mv1 <span style="color:#f92672">=</span> inv_fy <span style="color:#f92672">*</span> mv1 <span style="color:#f92672">-</span> cy_fy;
+    norm <span style="color:#f92672">=</span> sqrt(mu1 <span style="color:#f92672">*</span> mu1 <span style="color:#f92672">+</span> mv1 <span style="color:#f92672">*</span> mv1 <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+    mk1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.</span> <span style="color:#f92672">/</span> norm; mu1 <span style="color:#f92672">*=</span> mk1; mv1 <span style="color:#f92672">*=</span> mk1;
+
+    mu2 <span style="color:#f92672">=</span> inv_fx <span style="color:#f92672">*</span> mu2 <span style="color:#f92672">-</span> cx_fx;
+    mv2 <span style="color:#f92672">=</span> inv_fy <span style="color:#f92672">*</span> mv2 <span style="color:#f92672">-</span> cy_fy;
+    norm <span style="color:#f92672">=</span> sqrt(mu2 <span style="color:#f92672">*</span> mu2 <span style="color:#f92672">+</span> mv2 <span style="color:#f92672">*</span> mv2 <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+    mk2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.</span> <span style="color:#f92672">/</span> norm; mu2 <span style="color:#f92672">*=</span> mk2; mv2 <span style="color:#f92672">*=</span> mk2;
+
+    <span style="color:#75715e">//世界坐标系中，ABC三点的距离；
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">double</span> distances[<span style="color:#ae81ff">3</span>];
+    distances[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> sqrt( (X1 <span style="color:#f92672">-</span> X2) <span style="color:#f92672">*</span> (X1 <span style="color:#f92672">-</span> X2) <span style="color:#f92672">+</span> (Y1 <span style="color:#f92672">-</span> Y2) <span style="color:#f92672">*</span> (Y1 <span style="color:#f92672">-</span> Y2) <span style="color:#f92672">+</span> (Z1 <span style="color:#f92672">-</span> Z2) <span style="color:#f92672">*</span> (Z1 <span style="color:#f92672">-</span> Z2) );
+    distances[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> sqrt( (X0 <span style="color:#f92672">-</span> X2) <span style="color:#f92672">*</span> (X0 <span style="color:#f92672">-</span> X2) <span style="color:#f92672">+</span> (Y0 <span style="color:#f92672">-</span> Y2) <span style="color:#f92672">*</span> (Y0 <span style="color:#f92672">-</span> Y2) <span style="color:#f92672">+</span> (Z0 <span style="color:#f92672">-</span> Z2) <span style="color:#f92672">*</span> (Z0 <span style="color:#f92672">-</span> Z2) );
+    distances[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> sqrt( (X0 <span style="color:#f92672">-</span> X1) <span style="color:#f92672">*</span> (X0 <span style="color:#f92672">-</span> X1) <span style="color:#f92672">+</span> (Y0 <span style="color:#f92672">-</span> Y1) <span style="color:#f92672">*</span> (Y0 <span style="color:#f92672">-</span> Y1) <span style="color:#f92672">+</span> (Z0 <span style="color:#f92672">-</span> Z1) <span style="color:#f92672">*</span> (Z0 <span style="color:#f92672">-</span> Z1) );
+
+    <span style="color:#75715e">//三点之间的角度值；
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Calculate angles
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">double</span> cosines[<span style="color:#ae81ff">3</span>];
+    cosines[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> mu1 <span style="color:#f92672">*</span> mu2 <span style="color:#f92672">+</span> mv1 <span style="color:#f92672">*</span> mv2 <span style="color:#f92672">+</span> mk1 <span style="color:#f92672">*</span> mk2;
+    cosines[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> mu0 <span style="color:#f92672">*</span> mu2 <span style="color:#f92672">+</span> mv0 <span style="color:#f92672">*</span> mv2 <span style="color:#f92672">+</span> mk0 <span style="color:#f92672">*</span> mk2;
+    cosines[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> mu0 <span style="color:#f92672">*</span> mu1 <span style="color:#f92672">+</span> mv0 <span style="color:#f92672">*</span> mv1 <span style="color:#f92672">+</span> mk0 <span style="color:#f92672">*</span> mk1;
+
+    <span style="color:#75715e">//吴消元法求解PA，PB，PC的值，有四组解；
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">double</span> lengths[<span style="color:#ae81ff">4</span>][<span style="color:#ae81ff">3</span>];
+    <span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> solve_for_lengths(lengths, distances, cosines);
+
+    <span style="color:#66d9ef">int</span> nb_solutions <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> n; i<span style="color:#f92672">++</span>) {
+        <span style="color:#66d9ef">double</span> M_orig[<span style="color:#ae81ff">3</span>][<span style="color:#ae81ff">3</span>];
+
+        <span style="color:#75715e">//对每个点求坐标值，单位向量乘以距离；
+</span><span style="color:#75715e"></span>        M_orig[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> lengths[i][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> mu0;
+        M_orig[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> lengths[i][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> mv0;
+        M_orig[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> lengths[i][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> mk0;
+
+        M_orig[<span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> lengths[i][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">*</span> mu1;
+        M_orig[<span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> lengths[i][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">*</span> mv1;
+        M_orig[<span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> lengths[i][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">*</span> mk1;
+
+        M_orig[<span style="color:#ae81ff">2</span>][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> lengths[i][<span style="color:#ae81ff">2</span>] <span style="color:#f92672">*</span> mu2;
+        M_orig[<span style="color:#ae81ff">2</span>][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> lengths[i][<span style="color:#ae81ff">2</span>] <span style="color:#f92672">*</span> mv2;
+        M_orig[<span style="color:#ae81ff">2</span>][<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> lengths[i][<span style="color:#ae81ff">2</span>] <span style="color:#f92672">*</span> mk2;
+
+        <span style="color:#75715e">//计算每个解对应的位姿矩阵R，t
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>align(M_orig, X0, Y0, Z0, X1, Y1, Z1, X2, Y2, Z2, R[nb_solutions], t[nb_solutions]))
+            <span style="color:#66d9ef">continue</span>;
+
+        nb_solutions<span style="color:#f92672">++</span>;
+    }
+</code></pre></div><p>使用吴消元法求解$PA$、$PB$、$PC$的距离：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">/// Given 3D distances between three points and cosines of 3 angles at the apex, calculates
+</span><span style="color:#75715e">/// the lentghs of the line segments connecting projection center (P) and the three 3D points (A, B, C).
+</span><span style="color:#75715e">/// Returned distances are for |PA|, |PB|, |PC| respectively.
+</span><span style="color:#75715e">/// Only the solution to the main branch.
+</span><span style="color:#75715e">/// Reference : X.S. Gao, X.-R. Hou, J. Tang, H.-F. Chang; &#34;Complete Solution Classification for the Perspective-Three-Point Problem&#34;
+</span><span style="color:#75715e">/// IEEE Trans. on PAMI, vol. 25, No. 8, August 2003
+</span><span style="color:#75715e">/// \param lengths3D Lengths of line segments up to four solutions.
+</span><span style="color:#75715e">/// \param dist3D Distance between 3D points in pairs |BC|, |AC|, |AB|.
+</span><span style="color:#75715e">/// \param cosines Cosine of the angles /_BPC, /_APC, /_APB.
+</span><span style="color:#75715e">/// \returns Number of solutions.
+</span><span style="color:#75715e">/// WARNING: NOT ALL THE DEGENERATE CASES ARE IMPLEMENTED
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> p3p<span style="color:#f92672">::</span>solve_for_lengths(<span style="color:#66d9ef">double</span> lengths[<span style="color:#ae81ff">4</span>][<span style="color:#ae81ff">3</span>], <span style="color:#66d9ef">double</span> distances[<span style="color:#ae81ff">3</span>], <span style="color:#66d9ef">double</span> cosines[<span style="color:#ae81ff">3</span>])
+{
+    <span style="color:#75715e">//吴消元法，数据准备
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">double</span> p <span style="color:#f92672">=</span> cosines[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>;
+    <span style="color:#66d9ef">double</span> q <span style="color:#f92672">=</span> cosines[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>;
+    <span style="color:#66d9ef">double</span> r <span style="color:#f92672">=</span> cosines[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>;
+
+    <span style="color:#66d9ef">double</span> inv_d22 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.</span> <span style="color:#f92672">/</span> (distances[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">*</span> distances[<span style="color:#ae81ff">2</span>]);
+    <span style="color:#66d9ef">double</span> a <span style="color:#f92672">=</span> inv_d22 <span style="color:#f92672">*</span> (distances[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> distances[<span style="color:#ae81ff">0</span>]);
+    <span style="color:#66d9ef">double</span> b <span style="color:#f92672">=</span> inv_d22 <span style="color:#f92672">*</span> (distances[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">*</span> distances[<span style="color:#ae81ff">1</span>]);
+
+    <span style="color:#66d9ef">double</span> a2 <span style="color:#f92672">=</span> a <span style="color:#f92672">*</span> a, b2 <span style="color:#f92672">=</span> b <span style="color:#f92672">*</span> b, p2 <span style="color:#f92672">=</span> p <span style="color:#f92672">*</span> p, q2 <span style="color:#f92672">=</span> q <span style="color:#f92672">*</span> q, r2 <span style="color:#f92672">=</span> r <span style="color:#f92672">*</span> r;
+    <span style="color:#66d9ef">double</span> pr <span style="color:#f92672">=</span> p <span style="color:#f92672">*</span> r, pqr <span style="color:#f92672">=</span> q <span style="color:#f92672">*</span> pr;
+
+    <span style="color:#75715e">// Check reality condition (the four points should not be coplanar)
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (p2 <span style="color:#f92672">+</span> q2 <span style="color:#f92672">+</span> r2 <span style="color:#f92672">-</span> pqr <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+
+    <span style="color:#66d9ef">double</span> ab <span style="color:#f92672">=</span> a <span style="color:#f92672">*</span> b, a_2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>a;
+
+    <span style="color:#66d9ef">double</span> A <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> b <span style="color:#f92672">+</span> b2 <span style="color:#f92672">+</span> a2 <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> ab<span style="color:#f92672">*</span>(<span style="color:#ae81ff">2</span> <span style="color:#f92672">-</span> r2) <span style="color:#f92672">-</span> a_2;
+
+    <span style="color:#75715e">//A, B, C, D, E 为四次多项式的系数；
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Check reality condition
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (A <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+
+    <span style="color:#66d9ef">double</span> a_4 <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span><span style="color:#f92672">*</span>a;
+
+    <span style="color:#66d9ef">double</span> B <span style="color:#f92672">=</span> q<span style="color:#f92672">*</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>(ab <span style="color:#f92672">+</span> a2 <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> b) <span style="color:#f92672">+</span> r2<span style="color:#f92672">*</span>ab <span style="color:#f92672">+</span> a_4) <span style="color:#f92672">+</span> pr<span style="color:#f92672">*</span>(b <span style="color:#f92672">-</span> b2 <span style="color:#f92672">+</span> ab);
+    <span style="color:#66d9ef">double</span> C <span style="color:#f92672">=</span> q2 <span style="color:#f92672">+</span> b2<span style="color:#f92672">*</span>(r2 <span style="color:#f92672">+</span> p2 <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">-</span> b<span style="color:#f92672">*</span>(p2 <span style="color:#f92672">+</span> pqr) <span style="color:#f92672">-</span> ab<span style="color:#f92672">*</span>(r2 <span style="color:#f92672">+</span> pqr) <span style="color:#f92672">+</span> (a2 <span style="color:#f92672">-</span> a_2)<span style="color:#f92672">*</span>(<span style="color:#ae81ff">2</span> <span style="color:#f92672">+</span> q2) <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>;
+    <span style="color:#66d9ef">double</span> D <span style="color:#f92672">=</span> pr<span style="color:#f92672">*</span>(ab<span style="color:#f92672">-</span>b2<span style="color:#f92672">+</span>b) <span style="color:#f92672">+</span> q<span style="color:#f92672">*</span>((p2<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>)<span style="color:#f92672">*</span>b <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> (ab <span style="color:#f92672">-</span> a2) <span style="color:#f92672">+</span> a_4 <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span>);
+    <span style="color:#66d9ef">double</span> E <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>(b <span style="color:#f92672">-</span> a <span style="color:#f92672">-</span> ab) <span style="color:#f92672">+</span> b2 <span style="color:#f92672">-</span> b<span style="color:#f92672">*</span>p2 <span style="color:#f92672">+</span> a2;
+
+    <span style="color:#66d9ef">double</span> temp <span style="color:#f92672">=</span> (p2<span style="color:#f92672">*</span>(a<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">+</span>b) <span style="color:#f92672">+</span> r2<span style="color:#f92672">*</span>(a<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span>b) <span style="color:#f92672">+</span> pqr <span style="color:#f92672">-</span> a<span style="color:#f92672">*</span>pqr);
+    <span style="color:#66d9ef">double</span> b0 <span style="color:#f92672">=</span> b <span style="color:#f92672">*</span> temp <span style="color:#f92672">*</span> temp;
+    <span style="color:#75715e">// Check reality condition
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (b0 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+
+    <span style="color:#75715e">//求解四次多项式；
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">double</span> real_roots[<span style="color:#ae81ff">4</span>];
+    <span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> solve_deg4(A, B, C, D, E,  real_roots[<span style="color:#ae81ff">0</span>], real_roots[<span style="color:#ae81ff">1</span>], real_roots[<span style="color:#ae81ff">2</span>], real_roots[<span style="color:#ae81ff">3</span>]);
+
+    <span style="color:#66d9ef">if</span> (n <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+
+    <span style="color:#66d9ef">int</span> nb_solutions <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#66d9ef">double</span> r3 <span style="color:#f92672">=</span> r2<span style="color:#f92672">*</span>r, pr2 <span style="color:#f92672">=</span> p<span style="color:#f92672">*</span>r2, r3q <span style="color:#f92672">=</span> r3 <span style="color:#f92672">*</span> q;
+    <span style="color:#66d9ef">double</span> inv_b0 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.</span> <span style="color:#f92672">/</span> b0;
+
+    <span style="color:#75715e">// For each solution of x
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> n; i<span style="color:#f92672">++</span>) {
+        <span style="color:#66d9ef">double</span> x <span style="color:#f92672">=</span> real_roots[i];
+
+        <span style="color:#75715e">// Check reality condition
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (x <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span>)
+            <span style="color:#66d9ef">continue</span>;
+
+        <span style="color:#66d9ef">double</span> x2 <span style="color:#f92672">=</span> x<span style="color:#f92672">*</span>x;
+　　　　<span style="color:#75715e">//对应附录中的b1
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">double</span> b1 <span style="color:#f92672">=</span>
+            ((<span style="color:#ae81ff">1</span><span style="color:#f92672">-</span>a<span style="color:#f92672">-</span>b)<span style="color:#f92672">*</span>x2 <span style="color:#f92672">+</span> (q<span style="color:#f92672">*</span>a<span style="color:#f92672">-</span>q)<span style="color:#f92672">*</span>x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> a <span style="color:#f92672">+</span> b) <span style="color:#f92672">*</span>
+            (((r3<span style="color:#f92672">*</span>(a2 <span style="color:#f92672">+</span> ab<span style="color:#f92672">*</span>(<span style="color:#ae81ff">2</span> <span style="color:#f92672">-</span> r2) <span style="color:#f92672">-</span> a_2 <span style="color:#f92672">+</span> b2 <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>b <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)) <span style="color:#f92672">*</span> x <span style="color:#f92672">+</span>
+
+            (r3q<span style="color:#f92672">*</span>(<span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>(b<span style="color:#f92672">-</span>a2) <span style="color:#f92672">+</span> a_4 <span style="color:#f92672">+</span> ab<span style="color:#f92672">*</span>(r2 <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">+</span> pr2<span style="color:#f92672">*</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> a2 <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>(ab<span style="color:#f92672">-</span>a<span style="color:#f92672">-</span>b) <span style="color:#f92672">+</span> r2<span style="color:#f92672">*</span>(b <span style="color:#f92672">-</span> b2) <span style="color:#f92672">+</span> b2))) <span style="color:#f92672">*</span> x2 <span style="color:#f92672">+</span>
+
+            (r3<span style="color:#f92672">*</span>(q2<span style="color:#f92672">*</span>(<span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>a<span style="color:#f92672">+</span>a2) <span style="color:#f92672">+</span> r2<span style="color:#f92672">*</span>(b2<span style="color:#f92672">-</span>ab) <span style="color:#f92672">-</span> a_4 <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>(a2 <span style="color:#f92672">-</span> b2) <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">+</span> r<span style="color:#f92672">*</span>p2<span style="color:#f92672">*</span>(b2 <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>(ab <span style="color:#f92672">-</span> b <span style="color:#f92672">-</span> a) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> a2) <span style="color:#f92672">+</span> pr2<span style="color:#f92672">*</span>q<span style="color:#f92672">*</span>(a_4 <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>(b <span style="color:#f92672">-</span> ab <span style="color:#f92672">-</span> a2) <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">-</span> r2<span style="color:#f92672">*</span>b)) <span style="color:#f92672">*</span> x <span style="color:#f92672">+</span>
+
+            <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>r3q<span style="color:#f92672">*</span>(a_2 <span style="color:#f92672">-</span> b <span style="color:#f92672">-</span> a2 <span style="color:#f92672">+</span> ab <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> pr2<span style="color:#f92672">*</span>(q2 <span style="color:#f92672">-</span> a_4 <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>(a2 <span style="color:#f92672">-</span> b2) <span style="color:#f92672">+</span> r2<span style="color:#f92672">*</span>b <span style="color:#f92672">+</span> q2<span style="color:#f92672">*</span>(a2 <span style="color:#f92672">-</span> a_2) <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">+</span>
+            p2<span style="color:#f92672">*</span>(p<span style="color:#f92672">*</span>(<span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>(ab <span style="color:#f92672">-</span> a <span style="color:#f92672">-</span> b) <span style="color:#f92672">+</span> a2 <span style="color:#f92672">+</span> b2 <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>q<span style="color:#f92672">*</span>r<span style="color:#f92672">*</span>(b <span style="color:#f92672">+</span> a_2 <span style="color:#f92672">-</span> a2 <span style="color:#f92672">-</span> ab <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>)));
+
+        <span style="color:#75715e">// Check reality condition
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (b1 <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span>)
+            <span style="color:#66d9ef">continue</span>;
+
+        <span style="color:#66d9ef">double</span> y <span style="color:#f92672">=</span> inv_b0 <span style="color:#f92672">*</span> b1;
+        <span style="color:#66d9ef">double</span> v <span style="color:#f92672">=</span> x2 <span style="color:#f92672">+</span> y<span style="color:#f92672">*</span>y <span style="color:#f92672">-</span> x<span style="color:#f92672">*</span>y<span style="color:#f92672">*</span>r;
+
+        <span style="color:#66d9ef">if</span> (v <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span>)
+            <span style="color:#66d9ef">continue</span>;
+
+        <span style="color:#66d9ef">double</span> Z <span style="color:#f92672">=</span> distances[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">/</span> sqrt(v);
+        <span style="color:#66d9ef">double</span> X <span style="color:#f92672">=</span> x <span style="color:#f92672">*</span> Z;
+        <span style="color:#66d9ef">double</span> Y <span style="color:#f92672">=</span> y <span style="color:#f92672">*</span> Z;
+
+        lengths[nb_solutions][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> X;
+        lengths[nb_solutions][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> Y;
+        lengths[nb_solutions][<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> Z;
+
+        nb_solutions<span style="color:#f92672">++</span>;
+    }
+
+    <span style="color:#66d9ef">return</span> nb_solutions;
+}
+</code></pre></div><p>从4组解中选择合适的解：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">	<span style="color:#66d9ef">int</span> ns <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#66d9ef">double</span> min_reproj <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> n; i<span style="color:#f92672">++</span>) {
+        <span style="color:#66d9ef">double</span> X3p <span style="color:#f92672">=</span> Rs[i][<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> X3 <span style="color:#f92672">+</span> Rs[i][<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">*</span> Y3 <span style="color:#f92672">+</span> Rs[i][<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">2</span>] <span style="color:#f92672">*</span> Z3 <span style="color:#f92672">+</span> ts[i][<span style="color:#ae81ff">0</span>];
+        <span style="color:#66d9ef">double</span> Y3p <span style="color:#f92672">=</span> Rs[i][<span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> X3 <span style="color:#f92672">+</span> Rs[i][<span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">*</span> Y3 <span style="color:#f92672">+</span> Rs[i][<span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">2</span>] <span style="color:#f92672">*</span> Z3 <span style="color:#f92672">+</span> ts[i][<span style="color:#ae81ff">1</span>];
+        <span style="color:#66d9ef">double</span> Z3p <span style="color:#f92672">=</span> Rs[i][<span style="color:#ae81ff">2</span>][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> X3 <span style="color:#f92672">+</span> Rs[i][<span style="color:#ae81ff">2</span>][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">*</span> Y3 <span style="color:#f92672">+</span> Rs[i][<span style="color:#ae81ff">2</span>][<span style="color:#ae81ff">2</span>] <span style="color:#f92672">*</span> Z3 <span style="color:#f92672">+</span> ts[i][<span style="color:#ae81ff">2</span>];
+        <span style="color:#66d9ef">double</span> mu3p <span style="color:#f92672">=</span> cx <span style="color:#f92672">+</span> fx <span style="color:#f92672">*</span> X3p <span style="color:#f92672">/</span> Z3p;
+        <span style="color:#66d9ef">double</span> mv3p <span style="color:#f92672">=</span> cy <span style="color:#f92672">+</span> fy <span style="color:#f92672">*</span> Y3p <span style="color:#f92672">/</span> Z3p;
+        <span style="color:#75715e">//通过R，t计算第4个点的重投影误差选择合理的解
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">double</span> reproj <span style="color:#f92672">=</span> (mu3p <span style="color:#f92672">-</span> mu3) <span style="color:#f92672">*</span> (mu3p <span style="color:#f92672">-</span> mu3) <span style="color:#f92672">+</span> (mv3p <span style="color:#f92672">-</span> mv3) <span style="color:#f92672">*</span> (mv3p <span style="color:#f92672">-</span> mv3);
+        <span style="color:#75715e">//选择重投影误差最小的解
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (i <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> min_reproj <span style="color:#f92672">&gt;</span> reproj) {
+            ns <span style="color:#f92672">=</span> i;
+            min_reproj <span style="color:#f92672">=</span> reproj;
+        }
+    }
+</code></pre></div><p>吴消元法系数如下：</p>
+<p><img src="https://i.loli.net/2020/11/20/UKxVGfWdtrhSeDJ.png" alt="吴消元法系数.png"></p>
+<p>其中：
+$$
+p=2 \cdot \cos &lt;a, c&gt;\quad q=2 \cdot \cos &lt;b, c&gt;\quad r=2 \cdot \cos &lt;a, b&gt;
+$$</p>
+
+                        </div>
+
+                        <div class="post-meta meta-tags">
+                            
+                            没有标签
+                            
+                        </div>
+                    </article>
+                    
+                    <div id="comments"><span class="widget-title"></span></div>
+
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        
+    
+<form id="search" action="https://www.google.com/search" method="get" accept-charset="utf-8" target="_blank">
+    <input type="text" name="q" maxlength="255" placeholder="搜索...">
+    <input type="hidden" name="sitesearch" value="">
+    <button type="submit" class="submit icon-search"></button>
+</form>
+
+
+
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+        <ul class="widget-list">
+            
+            <li>
+                <a href="/categories/c&#43;&#43;">
+                    c&#43;&#43; (3)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/markdown">
+                    markdown (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E4%B9%A6%E5%8D%95">
+                    书单 (1)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">
+                    统计学习方法 (10)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%86%E8%A7%89">
+                    视觉 (5)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">
+                    解决方案 (11)
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+      &copy; 2020 <a rel="nofollow" href="https://lxli1996.github.io"></a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io">Hugo</a> &amp; <a rel="nofollow noreferer noopener" href="https://github.com/JokerQyou/maupassant-hugo">maupassant theme</a>.
+    </div>
+</footer>
+
+<script type="text/javascript" src="/js/app.js" defer></script>
+
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' defer></script>
+
+
+</body>
+</html>

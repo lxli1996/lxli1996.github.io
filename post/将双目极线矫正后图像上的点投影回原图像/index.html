@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-hans">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.79.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>双目极线矫正图像映射 - </title>
+    <meta property="og:title" content="双目极线矫正图像映射 - ">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2020-12-08T14:03:43&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2020-12-08T14:03:43&#43;08:00">
+        
+    <meta name="description" content="将双目极线矫正后图像上的点投影回原图像
+">
+        
+    <meta name="author" content="">
+    <meta property="og:url" content="https://lxli1996.github.io/post/%E5%B0%86%E5%8F%8C%E7%9B%AE%E6%9E%81%E7%BA%BF%E7%9F%AB%E6%AD%A3%E5%90%8E%E5%9B%BE%E5%83%8F%E4%B8%8A%E7%9A%84%E7%82%B9%E6%8A%95%E5%BD%B1%E5%9B%9E%E5%8E%9F%E5%9B%BE%E5%83%8F/">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    </head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://lxli1996.github.io">
+                        
+                    </a>
+                
+                
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://lxli1996.github.io">首页</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">双目极线矫正图像映射</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2020年12月8日
+                            14:03
+                        </date>
+                        
+                        <div class="post-meta meta-category">
+                            ，归类于
+                            
+                                <a href="/categories/%E8%A7%86%E8%A7%89">视觉</a>
+                            
+                        </div>
+                        <div class="post-content">
+                            <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Eigen<span style="color:#f92672">::</span>Vector3d pointToSrcImg(<span style="color:#66d9ef">const</span> Eigen<span style="color:#f92672">::</span>MatrixXd<span style="color:#f92672">&amp;</span> camK, Eigen<span style="color:#f92672">::</span>Vector3d<span style="color:#f92672">&amp;</span> point, Eigen<span style="color:#f92672">::</span>MatrixXd<span style="color:#f92672">&amp;</span> R, Eigen<span style="color:#f92672">::</span>MatrixXd<span style="color:#f92672">&amp;</span> newP) {
+    	<span style="color:#75715e">//假设无畸变
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//将双目矫正后图像上的点变换到原图像上
+</span><span style="color:#75715e"></span>	Eigen<span style="color:#f92672">::</span>Vector3d norPoint;
+	<span style="color:#75715e">//先将校正后图像上的像素点投影到归一化平面
+</span><span style="color:#75715e"></span>	norPoint[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (point[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">-</span> newP(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2</span>)) <span style="color:#f92672">/</span> newP(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>);
+	norPoint[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> (point[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">-</span> newP(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>)) <span style="color:#f92672">/</span> newP(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>);
+	norPoint[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.0</span>;
+	Eigen<span style="color:#f92672">::</span>Vector3d xsPoint;
+	<span style="color:#75715e">//对归一化平面的点乘以R的逆，进行旋转
+</span><span style="color:#75715e"></span>	xsPoint <span style="color:#f92672">=</span> R.inverse()<span style="color:#f92672">*</span>norPoint;
+	<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span>; i<span style="color:#f92672">++</span>) {
+		xsPoint[i] <span style="color:#f92672">=</span> xsPoint[i] <span style="color:#f92672">/</span> xsPoint[<span style="color:#ae81ff">2</span>];<span style="color:#75715e">//进行归一化
+</span><span style="color:#75715e"></span>	}
+	Eigen<span style="color:#f92672">::</span>Vector3d uvPoint;
+	<span style="color:#75715e">//向原始图像上进行投影
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//uvPoint = camK*xsPoint;
+</span><span style="color:#75715e"></span>	uvPoint[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> camK(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">*</span> xsPoint[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> camK(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2</span>);
+	uvPoint[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> camK(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> xsPoint[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> camK(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>);
+	uvPoint[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.0</span>;
+	<span style="color:#75715e">//std::cout &lt;&lt; uvPoint &lt;&lt; std::endl;
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> uvPoint;
+}
+</code></pre></div><p>公式如下：
+$$
+\begin{array}{l}x \leftarrow\left(u-c_{x}^{\prime}\right) / f_{x}^{\prime} \\y \leftarrow\left(v-c_{y}^{\prime}\right) / f_{y}^{\prime} \\{[X Y W]^{T} \leftarrow R^{-1} *[x y 1]^{T}} \\x^{\prime} \leftarrow X / W \\y^{\prime} \leftarrow Y / W \\x^{\prime \prime} \leftarrow x^{\prime }\left(1+k_{1} r^{2}+k_{2} r^{4}+k_{3} r^{6}\right)+2 p_{1} x^{\prime} y^{\prime}+p_{2}\left(r^{2}+2 x^{2}\right) \\y^{\prime \prime} \leftarrow y^{\prime}\left(1+k_{1} r^{2}+k_{2} r^{4}+k_{3} r^{6}\right)+p_{1}\left(r^{2}+2 y^{2}\right)+2 p_{2} x^{\prime} y^{\prime} \\\operatorname{map}_{x}(u, v) \leftarrow x^{\prime \prime} f_{x}+c_{x} \\\operatorname{map}_{y}(u, v) \leftarrow y^{\prime \prime} f_{y}+c_{y}\end{array}
+$$</p>
+
+                        </div>
+
+                        <div class="post-meta meta-tags">
+                            
+                            没有标签
+                            
+                        </div>
+                    </article>
+                    
+                    <div id="comments"><span class="widget-title"></span></div>
+
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        
+    
+<form id="search" action="https://www.google.com/search" method="get" accept-charset="utf-8" target="_blank">
+    <input type="text" name="q" maxlength="255" placeholder="搜索...">
+    <input type="hidden" name="sitesearch" value="">
+    <button type="submit" class="submit icon-search"></button>
+</form>
+
+
+
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+        <ul class="widget-list">
+            
+            <li>
+                <a href="/categories/c&#43;&#43;">
+                    c&#43;&#43; (3)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/markdown">
+                    markdown (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E4%B9%A6%E5%8D%95">
+                    书单 (1)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">
+                    统计学习方法 (10)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%86%E8%A7%89">
+                    视觉 (5)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">
+                    解决方案 (11)
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+      &copy; 2020 <a rel="nofollow" href="https://lxli1996.github.io"></a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io">Hugo</a> &amp; <a rel="nofollow noreferer noopener" href="https://github.com/JokerQyou/maupassant-hugo">maupassant theme</a>.
+    </div>
+</footer>
+
+<script type="text/javascript" src="/js/app.js" defer></script>
+
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' defer></script>
+
+
+</body>
+</html>

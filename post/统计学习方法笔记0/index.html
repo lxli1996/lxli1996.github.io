@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh-hans">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.79.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>统计学习方法0 - </title>
+    <meta property="og:title" content="统计学习方法0 - ">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2020-12-06T14:03:43&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2020-12-06T14:03:43&#43;08:00">
+        
+    <meta name="description" content="统计学习方法0
+">
+        
+    <meta name="author" content="">
+    <meta property="og:url" content="https://lxli1996.github.io/post/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E7%AC%94%E8%AE%B00/">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    </head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://lxli1996.github.io">
+                        
+                    </a>
+                
+                
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://lxli1996.github.io">首页</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">统计学习方法0</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2020年12月6日
+                            14:03
+                        </date>
+                        
+                        <div class="post-meta meta-category">
+                            ，归类于
+                            
+                                <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">统计学习方法</a>
+                            
+                        </div>
+                        <aside id="toc" class="dismissed">
+                            <span class="toc-title">目录 <a href="#" class="toc-dismiss"></a></span>
+                            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#第1章统计学习方法概论">第1章统计学习方法概论</a>
+      <ul>
+        <li><a href="#模型">模型</a></li>
+        <li><a href="#策略">策略</a></li>
+        <li><a href="#正则化与交叉验证">正则化与交叉验证</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+                        </aside><div class="post-content">
+                            <h2 id="第1章统计学习方法概论">第1章统计学习方法概论</h2>
+<p>统计学习关于数据的基本假设是同类数据具有一定的统计规律性。</p>
+<p>统计学习分类：监督学习、无监督学习和强化学习。</p>
+<p>监督学习可以概括如下：从给定有限的训练数据出发， <strong>假设数据是独立同分布的</strong>，而且假设模型属于某个假设空间，应用某一评价准则，从假设空间中选取一个最优的模型，使它对已给训练数据及未知测试数据在给定评价标准意义下有最准确的预测。</p>
+<p>输入变量与输出变量均为连续变量的预测问题称为回归问题，输出变量为有限个离散变量的预测问题称为分类问题，输入变量与输出变量均为变量序列的预测问题称为标注问题。</p>
+<p>在监督学习中，概率模型是生成模型，非概率模型是判别模型。</p>
+<h3 id="模型">模型</h3>
+<p>在监督学习过程中，模型就是所要学习的<strong>条件概率分布</strong>或者<strong>决策函数</strong>。</p>
+<h3 id="策略">策略</h3>
+<h4 id="损失函数与风险函数">损失函数与风险函数</h4>
+<p>损失函数度量<strong>一次预测</strong>的好坏，风险函数度量<strong>平均意义</strong>下模型预测的好坏。</p>
+<ol>
+<li>
+<p>损失函数(loss function)或代价函数(cost function)
+损失函数定义为给定输入$X$的<strong>预测值$f(X)$<strong>和</strong>真实值$Y$<strong>之间的</strong>非负实值</strong>函数，记作$L(Y,f(X))$</p>
+<p>损失函数的种类：</p>
+<p>(1)0-1损失：
+$$
+L(Y,f(X))=\begin{cases}1, Y \neq f(X) \\0, Y=f(X) \end{cases}
+$$
+(2)平方损失：
+$$
+L(Y,f(X))=(Y-f(X))^2
+$$
+(3)绝对损失：
+$$
+L(Y,f(X))=|Y-f(X)|
+$$
+(4)对数损失：
+$$
+L(Y,P(Y|X))=-\log P(Y|X)
+$$</p>
+</li>
+<li>
+<p>风险函数(risk function)或期望损失(expected loss)
+$$
+R_{exp}(f)=E_p[L(Y, f(X))]=\int_{\mathcal X\times\mathcal Y}L(y,f(x))P(x,y), {\rm d}x{\rm d}y
+$$
+模型$f(X)$关于联合分布$P(X,Y)$的**平均意义下的**损失(**期望**损失)，但是因为$P(X,Y)$是未知的，所以前面的用词是**期望**，以及**平均意义下的**。</p>
+</li>
+<li>
+<p><strong>经验风险</strong>(empirical risk)或<strong>经验损失</strong>(empirical loss)</p>
+<p>模型$f(X)$关于训练数据集的平均损失称为经验损失。记作$R_{emp}(f)$：
+$$
+R_{emp}(f)=\frac{1}{N}\sum^{N}_{i=1}L(y_i,f(x_i))
+$$
+期望风险$R_{exp}(f)$是模型关于联合分布的期望损失，经验风险$R_{emp}(f)$是模型关于训练样本集的平均损失，根据大数定律，当样本容量N趋于无穷大时，经验风险趋于期望风险。</p>
+</li>
+<li>
+<p><strong>结构风险</strong>(structural risk)</p>
+<p>结构风险最小化是为了防止过拟合而提出的策略，结构风险在经验风险上加上表示模型复杂度的正则化项或罚项，其定义为：
+$$
+R_{srm}(f)=\frac{1}{N}\sum_{i=1}^{N}L(y_i,f(x_i))+\lambda J(f)
+$$
+$J(f)$为模型复杂度, $\lambda \geqslant 0$是系数，用以权衡经验风险和模型复杂度。结构风险小需要经验风险与模型复杂度同时小，结构风险小的模型往往对训练数据以及未知的测试数据都有较好的预测。</p>
+</li>
+</ol>
+<p><strong>泛化能力</strong>：学习方法对未知数据的预测能力称为泛化能力。</p>
+<p><strong>过拟合</strong>：指学习时选择的模型所包含的参数过多，以至于出现这一模型对已知数据预测很好，但对未知数据预测很差的现象。</p>
+<h3 id="正则化与交叉验证">正则化与交叉验证</h3>
+<h4 id="正则化">正则化</h4>
+<p>模型选择的经典方法是正则化，正则化是结构风险最小化策略的实现，是在经验风险上加一个正则化项或罚项。在下式中第一项的经验风险较小的模型可能较复杂有多个非零参数，这时第二项的模型复杂度会比较大，正则化的作用是选择经验风险与模型复杂度同时较小的模型。
+$$
+min\frac{1}{N}\sum_{i=1}^{N}L(y_i,f(x_i))+\lambda J(f)
+$$
+其中$\lambda$为调整两者之间关系的系数。正则化项可以取不同的形式，如在回归问题中，损失函数是平方损失，正则化项可以是参数向量的$L_2$范数。其他情况下，也可以是$L_1$范数。</p>
+<h4 id="交叉验证">交叉验证</h4>
+<ol>
+<li>简单交叉验证</li>
+<li>S折交叉验证[^1]</li>
+<li>留一交叉验证</li>
+</ol>
+<h4 id="分类问题">分类问题</h4>
+<h5 id="评价分类器性能的指标">评价分类器性能的指标</h5>
+<p>评价分类器性能的指标一般是分类准确率，它的定义是对于给定的测试数据集，分类器正确分类的样本数与总样本数之比。</p>
+<p>对于二分类问题常用的评价标准是精准率和召回率，设有4种情况，TP：将正类预测为正类数，FN：将正类预测为负类数，FP：将负类预测为正类数，TN：将负类预测为负类数。</p>
+<p>精确率定义为：
+$$
+P=\frac {TP}{TP+FP}
+$$
+召回率定义为：
+$$
+R=\frac {TP}{TP+FN}
+$$</p>
+<p><strong><a href="#%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">⬆ top</a></strong></p>
+
+                        </div>
+
+                        <div class="post-meta meta-tags">
+                            
+                            没有标签
+                            
+                        </div>
+                    </article>
+                    
+                    <div id="comments"><span class="widget-title"></span></div>
+
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        
+    
+<form id="search" action="https://www.google.com/search" method="get" accept-charset="utf-8" target="_blank">
+    <input type="text" name="q" maxlength="255" placeholder="搜索...">
+    <input type="hidden" name="sitesearch" value="">
+    <button type="submit" class="submit icon-search"></button>
+</form>
+
+
+
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+        <ul class="widget-list">
+            
+            <li>
+                <a href="/categories/c&#43;&#43;">
+                    c&#43;&#43; (3)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/markdown">
+                    markdown (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E4%B9%A6%E5%8D%95">
+                    书单 (1)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">
+                    统计学习方法 (10)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%86%E8%A7%89">
+                    视觉 (5)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">
+                    解决方案 (11)
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+      &copy; 2020 <a rel="nofollow" href="https://lxli1996.github.io"></a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io">Hugo</a> &amp; <a rel="nofollow noreferer noopener" href="https://github.com/JokerQyou/maupassant-hugo">maupassant theme</a>.
+    </div>
+</footer>
+
+<script type="text/javascript" src="/js/app.js" defer></script>
+
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' defer></script>
+
+
+</body>
+</html>

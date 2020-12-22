@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="zh-hans">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.79.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>C&#43;&#43;11中的随机数 - </title>
+    <meta property="og:title" content="C&#43;&#43;11中的随机数 - ">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2020-12-06T14:03:43&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2020-12-06T14:03:43&#43;08:00">
+        
+    <meta name="description" content="C&#43;&#43;11中的随机数
+">
+        
+    <meta name="author" content="">
+    <meta property="og:url" content="https://lxli1996.github.io/post/c&#43;&#43;11%E4%B8%AD%E7%9A%84%E9%9A%8F%E6%9C%BA%E6%95%B0/">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    </head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://lxli1996.github.io">
+                        
+                    </a>
+                
+                
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://lxli1996.github.io">首页</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">C&#43;&#43;11中的随机数</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2020年12月6日
+                            14:03
+                        </date>
+                        
+                        <div class="post-meta meta-category">
+                            ，归类于
+                            
+                                <a href="/categories/c&#43;&#43;">C&#43;&#43;</a>
+                            
+                        </div>
+                        <aside id="toc" class="dismissed">
+                            <span class="toc-title">目录 <a href="#" class="toc-dismiss"></a></span>
+                            <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#均匀分布">均匀分布：</a></li>
+        <li><a href="#伯努利类型分布">伯努利类型分布：</a></li>
+        <li><a href="#rate-based-distributions">Rate-based distributions:</a></li>
+        <li><a href="#正态分布相关">正态分布相关：</a></li>
+        <li><a href="#分段分布相关">分段分布相关：</a></li>
+        <li><a href="#代码">代码：</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+                        </aside><div class="post-content">
+                            <h3 id="均匀分布">均匀分布：</h3>
+<pre><code>   uniform_int_distribution          整数均匀分布
+   uniform_real_distribution        浮点数均匀分布
+</code></pre>
+<h3 id="伯努利类型分布">伯努利类型分布：</h3>
+<p>（仅有yes/no两种结果，概率一个p，一个1-p）</p>
+<pre><code>   bernoulli_distribution    伯努利分布
+   binomial_distribution     二项分布
+   geometry_distribution    几何分布
+   negative_biomial_distribution  负二项分布
+</code></pre>
+<h3 id="rate-based-distributions">Rate-based distributions:</h3>
+<pre><code>   poisson_distribution 泊松分布
+   exponential_distribution指数分布
+   gamma_distribution 伽马分布
+   weibull_distribution 威布尔分布
+   extreme_value_distribution 极值分布
+</code></pre>
+<h3 id="正态分布相关">正态分布相关：</h3>
+<pre><code>   normal_distribution        正态分布
+   chi_squared_distribution卡方分布
+   cauchy_distribution       柯西分布
+   fisher_f_distribution      费歇尔F分布
+   student_t_distribution t分布
+</code></pre>
+<h3 id="分段分布相关">分段分布相关：</h3>
+<pre><code>   discrete_distribution离散分布
+   piecewise_constant_distribution分段常数分布
+   piecewise_linear_distribution分段线性分布
+</code></pre>
+<h3 id="代码">代码：</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">	<span style="color:#75715e">//需要添加头文件:#include&lt;random&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//如果使用cmake编译，需要在cmakelists.txt中添加:add_definitions(-std=c++11)
+</span><span style="color:#75715e"></span>	std<span style="color:#f92672">::</span>default_random_engine e;<span style="color:#75715e">//生成随机无符合数
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>;i<span style="color:#f92672">++</span>)
+		cout<span style="color:#f92672">&lt;&lt;</span>e()<span style="color:#f92672">&lt;&lt;</span><span style="color:#e6db74">&#34; &#34;</span>;
+	cout<span style="color:#f92672">&lt;&lt;</span>endl;
+
+	std<span style="color:#f92672">::</span>uniform_int_distribution<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">unsigned</span><span style="color:#f92672">&gt;</span> u(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">9</span>);<span style="color:#75715e">//生成0到9之间的均匀分布的随机数
+</span><span style="color:#75715e"></span>	std<span style="color:#f92672">::</span>default_random_engine e1;
+	<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>;i<span style="color:#f92672">++</span>){
+		cout<span style="color:#f92672">&lt;&lt;</span>u(e1)<span style="color:#f92672">&lt;&lt;</span><span style="color:#e6db74">&#34; &#34;</span>;<span style="color:#75715e">//这样每次生成的都是同样的数
+</span><span style="color:#75715e"></span>	}
+	cout<span style="color:#f92672">&lt;&lt;</span>endl;
+	
+	<span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>uniform_int_distribution<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">unsigned</span><span style="color:#f92672">&gt;</span> stau(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">9</span>);
+	<span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>default_random_engine stae1;
+	<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>;i<span style="color:#f92672">++</span>){
+		cout<span style="color:#f92672">&lt;&lt;</span>stau(stae1)<span style="color:#f92672">&lt;&lt;</span><span style="color:#e6db74">&#34; &#34;</span>;<span style="color:#75715e">//第一次调用
+</span><span style="color:#75715e"></span>	}
+	cout<span style="color:#f92672">&lt;&lt;</span>endl;
+	<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>;i<span style="color:#f92672">++</span>){
+		cout<span style="color:#f92672">&lt;&lt;</span>stau(stae1)<span style="color:#f92672">&lt;&lt;</span><span style="color:#e6db74">&#34; &#34;</span>;<span style="color:#75715e">//第二次调用，可以看到两次调用结果不同
+</span><span style="color:#75715e"></span>	}
+	cout<span style="color:#f92672">&lt;&lt;</span>endl;
+
+	<span style="color:#75715e">//另一种生成不同随机数的方法是设置随机数种子
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//需要添加头文件：#include&lt;ctime&gt;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//同时需要注意到，time返回以秒为单位的时间，因此这种方法只适用于生成种子的间隔为秒级或更长的应用
+</span><span style="color:#75715e"></span>	std<span style="color:#f92672">::</span>default_random_engine seede2(time(<span style="color:#ae81ff">0</span>));
+	std<span style="color:#f92672">::</span>uniform_int_distribution<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">unsigned</span><span style="color:#f92672">&gt;</span> seedu(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">9</span>);
+	<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">3</span>;i<span style="color:#f92672">++</span>){
+		<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;j<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>;j<span style="color:#f92672">++</span>){
+			cout<span style="color:#f92672">&lt;&lt;</span>seedu(seede2)<span style="color:#f92672">&lt;&lt;</span><span style="color:#e6db74">&#34; &#34;</span>;
+		}
+		cout<span style="color:#f92672">&lt;&lt;</span>endl;
+	}
+
+	<span style="color:#75715e">//其他随机数分布
+</span><span style="color:#75715e"></span>	std<span style="color:#f92672">::</span>uniform_real_distribution<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">double</span><span style="color:#f92672">&gt;</span> realu(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>);<span style="color:#75715e">//生成0到1的浮点数
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>;i<span style="color:#f92672">++</span>){
+		cout<span style="color:#f92672">&lt;&lt;</span>realu(seede2)<span style="color:#f92672">&lt;&lt;</span><span style="color:#e6db74">&#34; &#34;</span>;
+	}
+	cout<span style="color:#f92672">&lt;&lt;</span>endl;
+
+	<span style="color:#75715e">//正态分布
+</span><span style="color:#75715e"></span>	std<span style="color:#f92672">::</span>normal_distribution<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">double</span><span style="color:#f92672">&gt;</span> normald(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>);
+	<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>;i<span style="color:#f92672">++</span>){
+		cout<span style="color:#f92672">&lt;&lt;</span>normald(seede2)<span style="color:#f92672">&lt;&lt;</span><span style="color:#e6db74">&#34; &#34;</span>;
+	}
+	cout<span style="color:#f92672">&lt;&lt;</span>endl;
+	
+	<span style="color:#75715e">//mt199337是c++11中加入的新特征。
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//它是一种随机数算法，用法与rand()函数类似，具有速度快周期长的特点(它的名字来自周期长度:2^19937-1)
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//rand()在windows下生成的数据范围为0到32767，但这个函数的随机范围大概为(INT_MIN,INT_MAX)
+</span><span style="color:#75715e"></span>	std<span style="color:#f92672">::</span>mt19937 rnd(time(<span style="color:#ae81ff">0</span>));
+	<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>;i<span style="color:#f92672">++</span>){
+		cout<span style="color:#f92672">&lt;&lt;</span>rnd()<span style="color:#f92672">&lt;&lt;</span><span style="color:#e6db74">&#34; &#34;</span>;
+	}
+	cout<span style="color:#f92672">&lt;&lt;</span>endl;
+</code></pre></div>
+                        </div>
+
+                        <div class="post-meta meta-tags">
+                            
+                            没有标签
+                            
+                        </div>
+                    </article>
+                    
+                    <div id="comments"><span class="widget-title"></span></div>
+
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        
+    
+<form id="search" action="https://www.google.com/search" method="get" accept-charset="utf-8" target="_blank">
+    <input type="text" name="q" maxlength="255" placeholder="搜索...">
+    <input type="hidden" name="sitesearch" value="">
+    <button type="submit" class="submit icon-search"></button>
+</form>
+
+
+
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+        <ul class="widget-list">
+            
+            <li>
+                <a href="/categories/c&#43;&#43;">
+                    c&#43;&#43; (3)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/markdown">
+                    markdown (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E4%B9%A6%E5%8D%95">
+                    书单 (1)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">
+                    统计学习方法 (10)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%86%E8%A7%89">
+                    视觉 (5)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">
+                    解决方案 (11)
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+      &copy; 2020 <a rel="nofollow" href="https://lxli1996.github.io"></a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io">Hugo</a> &amp; <a rel="nofollow noreferer noopener" href="https://github.com/JokerQyou/maupassant-hugo">maupassant theme</a>.
+    </div>
+</footer>
+
+<script type="text/javascript" src="/js/app.js" defer></script>
+
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' defer></script>
+
+
+</body>
+</html>

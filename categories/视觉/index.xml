@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>视觉 on </title>
+    <link>https://lxli1996.github.io/categories/%E8%A7%86%E8%A7%89/</link>
+    <description>Recent content in 视觉 on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-hans</language>
+    <lastBuildDate>Tue, 08 Dec 2020 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/%E8%A7%86%E8%A7%89/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ArUco使用</title>
+      <link>https://lxli1996.github.io/post/aruco%E7%9B%B8%E5%85%B3%E5%8D%9A%E5%AE%A2/</link>
+      <pubDate>Tue, 08 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/aruco%E7%9B%B8%E5%85%B3%E5%8D%9A%E5%AE%A2/</guid>
+      <description>https://blog.csdn.net/lixujie666/article/details/80246909
+https://blog.csdn.net/lixujie666/article/details/80251271
+https://blog.csdn.net/lixujie666/article/details/80260264
+https://blog.csdn.net/lixujie666/article/details/82153597</description>
+    </item>
+    
+    <item>
+      <title>P3P求解</title>
+      <link>https://lxli1996.github.io/post/p3p%E6%B1%82%E8%A7%A3/</link>
+      <pubDate>Tue, 08 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/p3p%E6%B1%82%E8%A7%A3/</guid>
+      <description>PnP(Perspective-n-Point)是求解3D到2D点对运动方法，它描述了当知道$N$个3D空间点及其投影位置时，如何估计相机位姿。而P3P问题，即给出空间中3个点的位置及其投影位置，求解相机位姿。一个示意图如下图所示：
+P3P的求解是从余弦定理开始的，设相机坐标中心为点$P$，$A$、$B$和$C$是不共线的3个3D点，$D$为验证3D点，根据余弦定理有如下公式： $$ \begin{array}{l}P A^{2}+P B^{2}-2 \cdot P A \cdot P B \cdot \cos &amp;lt;a, b&amp;gt;=A B^{2} \\P A^{2}+P C^{2}-2 \cdot P A \cdot P C \cdot \cos &amp;lt;a, c&amp;gt;=A C^{2} \\P B^{2}+P C^{2}-2 \cdot P B \cdot P C \cdot \cos &amp;lt;b, c&amp;gt;=B C^{2}\end{array} $$ 对上式同除$PC^2$，并且设$y=\frac {PB}{PC}$，$x=\frac {PA}{PC}$。
+则有： $$ \begin{array}{l}x^{2}+y^{2}-2 \cdot x \cdot y \cdot \cos &amp;lt;a, b&amp;gt;=\frac{A B^{2}}{P C^{2}} \\x^{2}+1-2 \cdot x \cdot \cos &amp;lt;a, c&amp;gt;=\frac{A C^{2}}{P C^{2}} \\y^{2}+1-2 \cdot y \cdot \cos &amp;lt;b, c&amp;gt;=\frac{B C^{2}}{P C^{2}}\end{array} $$ 设$u$、$v$和$w$分别为如下，并进行替换。 $$ u=\frac{A B^{2}}{P C^{2}}, v=\frac{B C^{2}}{A B^{2}}, w=\frac{A C^{2}}{A B^{2}} $$ 得： $$ \begin{array}{l}x^{2}+y^{2}-2 \cdot x \cdot y \cdot \cos &amp;lt;a, b&amp;gt;=u \\x^{2}+1-2 \cdot x \cdot \cos &amp;lt;a, c&amp;gt;=w u \\y^{2}+1-2 \cdot y \cdot \cos &amp;lt;b, c&amp;gt;=v u\end{array} $$ 将上式中第一个式子带入第2和第3个式子，得： $$ \begin{array}{l}(1-w) x^{2}-w \cdot y^{2}-2 \cdot x \cdot \cos &amp;lt;a, c&amp;gt;+2 \cdot w \cdot x \cdot y \cdot \cos &amp;lt;a, b&amp;gt;+1=0 \\(1-v) y^{2}-v \cdot x^{2}-2 \cdot y \cdot \cos &amp;lt;b, c&amp;gt;+2 \cdot v \cdot x \cdot y \cdot \cos &amp;lt;a, b&amp;gt;+1=0\end{array} $$ 在P3P问题中，3D到2D点的坐标是已知的，因此，$w, v, \cos &amp;lt;a, c&amp;gt;, \cos &amp;lt;b, c&amp;gt;, \cos &amp;lt;a, b&amp;gt;$都是已知量。$AB$，$BC$，$AC$可以通过输入的3D点进行求解，输入的2D点可以求解三个余弦值。</description>
+    </item>
+    
+    <item>
+      <title>双目极线矫正图像映射</title>
+      <link>https://lxli1996.github.io/post/%E5%B0%86%E5%8F%8C%E7%9B%AE%E6%9E%81%E7%BA%BF%E7%9F%AB%E6%AD%A3%E5%90%8E%E5%9B%BE%E5%83%8F%E4%B8%8A%E7%9A%84%E7%82%B9%E6%8A%95%E5%BD%B1%E5%9B%9E%E5%8E%9F%E5%9B%BE%E5%83%8F/</link>
+      <pubDate>Tue, 08 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/%E5%B0%86%E5%8F%8C%E7%9B%AE%E6%9E%81%E7%BA%BF%E7%9F%AB%E6%AD%A3%E5%90%8E%E5%9B%BE%E5%83%8F%E4%B8%8A%E7%9A%84%E7%82%B9%E6%8A%95%E5%BD%B1%E5%9B%9E%E5%8E%9F%E5%9B%BE%E5%83%8F/</guid>
+      <description>Eigen::Vector3d pointToSrcImg(const Eigen::MatrixXd&amp;amp; camK, Eigen::Vector3d&amp;amp; point, Eigen::MatrixXd&amp;amp; R, Eigen::MatrixXd&amp;amp; newP) { //假设无畸变 	//将双目矫正后图像上的点变换到原图像上 	Eigen::Vector3d norPoint; //先将校正后图像上的像素点投影到归一化平面 	norPoint[0] = (point[0] - newP(0, 2)) / newP(0, 0); norPoint[1] = (point[1] - newP(1, 2)) / newP(1, 1); norPoint[2] = 1.0; Eigen::Vector3d xsPoint; //对归一化平面的点乘以R的逆，进行旋转 	xsPoint = R.inverse()*norPoint; for (int i = 0; i &amp;lt; 3; i++) { xsPoint[i] = xsPoint[i] / xsPoint[2];//进行归一化 	} Eigen::Vector3d uvPoint; //向原始图像上进行投影 	//uvPoint = camK*xsPoint; 	uvPoint[0] = camK(0, 0) * xsPoint[0] + camK(0, 2); uvPoint[1] = camK(1, 1) * xsPoint[1] + camK(1, 2); uvPoint[2] = 1.</description>
+    </item>
+    
+    <item>
+      <title>本质矩阵分解实现</title>
+      <link>https://lxli1996.github.io/post/%E6%9C%AC%E8%B4%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3%E5%AE%9E%E7%8E%B0/</link>
+      <pubDate>Tue, 08 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/%E6%9C%AC%E8%B4%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3%E5%AE%9E%E7%8E%B0/</guid>
+      <description>本质矩阵的性质是它的奇异值有两个相等且第三个是0。
+基于此，设正交矩阵$W$： $$ W=\left[\begin{array}{ccc}0 &amp;amp; -1 &amp;amp; 0 \\1 &amp;amp; 0 &amp;amp; 0 \\0 &amp;amp; 0 &amp;amp; 1\end{array}\right] $$ 反对称矩阵$z$： $$ Z=\left[\begin{array}{ccc}0 &amp;amp; -1 &amp;amp; 0 \\1 &amp;amp; 0 &amp;amp; 0 \\0 &amp;amp; 0 &amp;amp; 0\end{array}\right] $$ $E=[t]_\times R=SR$，其中$S$是反对称矩阵。
+根据定义： $$ S=kUZU^T $$ 其中，$U$是正交矩阵，$Z=diag(1,1,0)W$，有： $$ S=kUdiag(1,1,0)WU^T $$ 即： $$ E=Udiag(k,k,0)WU^TR $$ 由SVD分解可得： $$ WU^TR=V^T $$ 由于$E$和$-E$等价，因此有两种可能： $$ R=UW^TV^T=U(-W^T)V^T=UWV^T $$ 因为$[t]_\times=S$，忽略$k$，化简后$t$等于$U$的最后一列，因此也有两种可能，综上共有4种可能，特征点在两个相机位姿下深度均为正的解是所求的。
+代码实现-来自VINS Matrix3d InitialEXRotation::solveRelativeR(const vector&amp;lt;pair&amp;lt;Vector3d, Vector3d&amp;gt;&amp;gt; &amp;amp;corres) { if (corres.size() &amp;gt;= 9) { vector&amp;lt;cv::Point2f&amp;gt; ll, rr; for (int i = 0; i &amp;lt; int(corres.</description>
+    </item>
+    
+    <item>
+      <title>特征点归一化</title>
+      <link>https://lxli1996.github.io/post/%E5%BD%92%E4%B8%80%E5%8C%96%E5%AE%9E%E7%8E%B0/</link>
+      <pubDate>Tue, 08 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/%E5%BD%92%E4%B8%80%E5%8C%96%E5%AE%9E%E7%8E%B0/</guid>
+      <description>在计算基础矩阵或基础矩阵时，由于特征点的坐标数据差距过大，如果直接进行求解则不能获得较好结果，因此需要对特征点进行坐标变换，也称为归一化操作。
+步骤  将点进行平移使其形心(x,y的均值)位于原点。 对点进行缩放使特征点到原点的距离为$\sqrt 2$。 对两幅图进行独立的上述变换。  代码实现来自Orbslam2 /** * ＠brief 归一化特征点到同一尺度（作为normalize DLT的输入） * * [x&amp;#39; y&amp;#39; 1]&amp;#39; = T * [x y 1]&amp;#39; \n * 归一化后x&amp;#39;, y&amp;#39;的均值为0，sum(abs(x_i&amp;#39;-0))=1，sum(abs((y_i&amp;#39;-0))=1 * * @param vKeys 特征点在图像上的坐标 * @param vNormalizedPoints 特征点归一化后的坐标 * @param T 将特征点归一化的矩阵 左乘 */ void Initializer::Normalize(const vector&amp;lt;cv::KeyPoint&amp;gt; &amp;amp;vKeys, vector&amp;lt;cv::Point2f&amp;gt; &amp;amp;vNormalizedPoints, cv::Mat &amp;amp;T) { //第一步得到所有特征点的均值,并将所有点的均值为0  float meanX = 0; float meanY = 0; for (int i = 0; i &amp;lt; vKeys.</description>
+    </item>
+    
+  </channel>
+</rss>
