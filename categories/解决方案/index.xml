@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>解决方案 on </title>
+    <link>https://lxli1996.github.io/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</link>
+    <description>Recent content in 解决方案 on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-hans</language>
+    <lastBuildDate>Sat, 19 Dec 2020 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>树莓派4B部署Openwrt</title>
+      <link>https://lxli1996.github.io/post/%E6%A0%91%E8%8E%93%E6%B4%BEopenwrt/</link>
+      <pubDate>Sat, 19 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/%E6%A0%91%E8%8E%93%E6%B4%BEopenwrt/</guid>
+      <description>树莓派4B部署Openwrt   树莓派4b Openwrt固件下载地址
+https://github.com/SulingGG/Openwrt-rpi，在设备支持情况位置，点击树莓派4BLean对应的对号，原文给出了，三种下载方式，在国内使用奶牛快传下载最快，下载的镜像为openwrt-bcm27xx-bcm2711-rpi-4-squashfs-factory.img(或与之相似)
+  将该系统烧写至树莓派
+  将树莓派通过网线与电脑连接，打开网络和Internet设置，点以太网，打开更改适配器。在以太网上右键选择属性，点击Internet协议版本4(TCP/IPv4)，手动设置IP地址为和树莓派在同一网段的不同地址，树莓派的IP地址是192.168.1.1。因此这里设置为192.168.1.2。子网掩码设置为255.255.255.0。默认网关设置为树莓派的网关192.168.1.1。下面的DNS服务器设置为通用的DNS，如114.114.114.114。点击确定。
+  打开浏览器，在地址栏输入192.168.1.1。进入openwrt登录界面，默认的密码是password，在左侧点击网络-&amp;gt;接口，在接口总览处-&amp;gt;LAN，点击修改。将IP地址设置为192.168.1.10(设置为主路由同一网段的不同地址)，子网掩码设置为255.255.255.0，网关设置为192.168.1.1。自定义DNS服务器设置为114.114.114.114。点击保存&amp;amp;应用。
+  将树莓派连接到主路由的一个LAN口上。
+  打开网络和Internet设置，点以太网，打开更改适配器，在wifi网络(假设你的设备是通过wifi与路由器连接)上右键属性，设置Ipv4属性，手动设置IP地址为192.168.1.2，子网掩码设置为255.255.255.0，默认网关设置为树莓派的网关192.168.1.10，自定义DNS服务器设置为114.114.114.114。保存设置
+  在网页上登录192.168.1.10，可以登录Openwrt表示设置成功。在服务-&amp;gt;openclash可以设置VPN服务。点击网络-&amp;gt;无线，即可设置树莓派上的wifi，wifi默认名为Openwrt，默认没有密码。点击编辑，在接口配置中点击无线安全，将加密设置为WPA-PSK/WPA2-PSK Mixed Mode，设置密钥(密码)，点击保存并应用，即完成无线wifi的设置。通过树莓派的wifi即可使用Openwrt服务。
+  通过以上方法，将树莓派作为旁路由使用，不影响主路由的使用。但是如果其他设备要用到旁路由需要进行以上设置网关。
+  为了简便使用旁路由的设置，只需将主路由的网关设置为旁路由的网关，这样所有连接主路由的设备都会自动继承旁路由的网关，也能使用旁路由的服务，但是前提是你的路由器可以设置=_=!。将路由的网关(ipv4网关)设置为树莓派的网关192.168.1.10。DNS服务器设置为114.114.114.114。保存。
+  在上面我们的电脑手动设置了IP地址，但是设置了主路由的网关后，就不需要了，因此将电脑设置为自动获得IP地址和自动获得DNS服务器地址。
+  </description>
+    </item>
+    
+    <item>
+      <title>神奇的网站</title>
+      <link>https://lxli1996.github.io/post/%E7%BD%91%E7%AB%99/</link>
+      <pubDate>Sat, 12 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/%E7%BD%91%E7%AB%99/</guid>
+      <description>公式图片转Latex:
+https://gongshi.wang/
+https://www.latexlive.com/
+Latex与mathtype的转换：
+https://jingyan.baidu.com/article/17bd8e522b738785ab2bb8fa.html
+在线画流程图：
+https://app.diagrams.net/
+在线拼音输入法：
+http://cncc7.com/py.html
+红白机游戏：
+https://dos.zczc.cz/
+http://www.famicn.com/
+http://www.gamewt.com/
+https://www.yikm.net/</description>
+    </item>
+    
+    <item>
+      <title>openwrt开启ttyd</title>
+      <link>https://lxli1996.github.io/post/openwrt%E5%BC%80%E5%90%AFttyd/</link>
+      <pubDate>Fri, 11 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/openwrt%E5%BC%80%E5%90%AFttyd/</guid>
+      <description>使用LEAN编译的固件，使用ttyd时可能出现拒绝访问的情况，如果有，则先在管理权页面添加ssh公钥，使用ssh连接openwrt。
+执行下 ps | grep ttyd，发现多了一个-i br-lan的参数，如果有的话，编辑 /etc/init.d/ttyd ，删除 -i $interface 那行，然后执行 /etc/init.d/ttyd restart 就行了</description>
+    </item>
+    
+    <item>
+      <title>ubuntu16.04 Pangolin安装</title>
+      <link>https://lxli1996.github.io/post/ubuntu16.04-pangolin%E5%AE%89%E8%A3%85/</link>
+      <pubDate>Thu, 10 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/ubuntu16.04-pangolin%E5%AE%89%E8%A3%85/</guid>
+      <description>  下载安装包
+git clone https://github.com/stevenlovegrove/Pangolin.git   安装依赖
+安装Glew:
+sudo apt-get install libglew-dev 安装Cmake,这个一般都会有
+sudo apt-get install cmake 安装Python2/Python3
+sudo apt-get install libpython2.7-dev   编译安装Pangolin
+cd Pangolin/ mkdir build cd build cmake .. make -j3 sudo make install   </description>
+    </item>
+    
+    <item>
+      <title>ubuntu16.04 更换启动器位置</title>
+      <link>https://lxli1996.github.io/post/ubuntu1604%E6%9B%B4%E6%8D%A2%E5%90%AF%E5%8A%A8%E5%99%A8%E4%BD%8D%E7%BD%AE/</link>
+      <pubDate>Thu, 10 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/ubuntu1604%E6%9B%B4%E6%8D%A2%E5%90%AF%E5%8A%A8%E5%99%A8%E4%BD%8D%E7%BD%AE/</guid>
+      <description>将启动器放到左侧： gsettings set com.canonical.Unity.Launcher launcher-position Left 将启动器放到下面： gsettings set com.canonical.Unity.Launcher launcher-position Bottom</description>
+    </item>
+    
+    <item>
+      <title>docker搭建ubuntu环境</title>
+      <link>https://lxli1996.github.io/post/docker%E6%90%AD%E5%BB%BAubuntu%E7%8E%AF%E5%A2%83/</link>
+      <pubDate>Mon, 07 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/docker%E6%90%AD%E5%BB%BAubuntu%E7%8E%AF%E5%A2%83/</guid>
+      <description>https://blog.csdn.net/litt1e/article/details/110627436</description>
+    </item>
+    
+    <item>
+      <title>K2刷机教程</title>
+      <link>https://lxli1996.github.io/post/k2%E5%88%B7%E6%9C%BA%E6%95%99%E7%A8%8B/</link>
+      <pubDate>Mon, 07 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/k2%E5%88%B7%E6%9C%BA%E6%95%99%E7%A8%8B/</guid>
+      <description>https://www.cnblogs.com/xuliangxing/p/6486560.html</description>
+    </item>
+    
+    <item>
+      <title>hugo数学公式</title>
+      <link>https://lxli1996.github.io/post/hugo%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Sat, 05 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/hugo%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%96%B9%E6%A1%88/</guid>
+      <description>在layouts/partials/下建立文件mathjax.html  &amp;lt;script type=&amp;quot;text/javascript&amp;quot; async src=&amp;quot;https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML&amp;quot;&amp;gt; MathJax.Hub.Config({ tex2jax: { inlineMath: [[&#39;$&#39;,&#39;$&#39;], [&#39;\\(&#39;,&#39;\\)&#39;]], displayMath: [[&#39;$$&#39;,&#39;$$&#39;], [&#39;\[\[&#39;,&#39;\]\]&#39;]], processEscapes: true, processEnvironments: true, skipTags: [&#39;script&#39;, &#39;noscript&#39;, &#39;style&#39;, &#39;textarea&#39;, &#39;pre&#39;], TeX: { equationNumbers: { autoNumber: &amp;quot;AMS&amp;quot; }, extensions: [&amp;quot;AMSmath.js&amp;quot;, &amp;quot;AMSsymbols.js&amp;quot;] } } }); MathJax.Hub.Queue(function() { // Fix &amp;lt;code&amp;gt; tags after MathJax finishes running. This is a // hack to overcome a shortcoming of Markdown. Discussion at // https://github.com/mojombo/jekyll/issues/199 var all = MathJax.Hub.getAllJax(), i; for(i = 0; i &amp;lt; all.</description>
+    </item>
+    
+    <item>
+      <title>Ubuntu 1604 Ceres安装</title>
+      <link>https://lxli1996.github.io/post/ubuntu1604ceres%E5%AE%89%E8%A3%85/</link>
+      <pubDate>Sat, 05 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/ubuntu1604ceres%E5%AE%89%E8%A3%85/</guid>
+      <description> 首先安装eigen3，版本为3.3.7。下载地址：https://gitlab.com/libeigen/eigen/-/releases  安装：
+mkdir buildcd buildcmake ..sudo make install安装ceres相关依赖  sudo apt-get install liblapack-devsudo apt-get install libsuitesparse-devsudo apt-get install libcxsparse3.1.2sudo apt-get install libgflags-devsudo apt-get install libgoogle-glog-devsudo apt-get install libgtest-dev如果安装时找不到 cxsparse 或者其他的lib，需要添加源
+首先打开源的列表：sudo gedit /etc/apt/sources.list
+把下面的源粘贴到source.list的最上方
+deb http://cz.archive.ubuntu.com/ubuntu trusty main universe更新一下：sudo apt-get update
+编译ceres  首先下载ceres-1.13.0版本，地址：ceres-solver.org/ceres-solver-1.13.0.tar.gz
+然后就是cmake、make、make install三连。
+mkdir buildcd buildcmake ..make -j4(j后面的数字表示用多核并行编译，如果你财力雄厚，你甚至可以make -j16，虽然这不一定会更快)sudo make install</description>
+    </item>
+    
+    <item>
+      <title>Ubuntu 1604 Eigen3安装</title>
+      <link>https://lxli1996.github.io/post/ubuntu_eigen3%E5%AE%89%E8%A3%85/</link>
+      <pubDate>Sat, 05 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/ubuntu_eigen3%E5%AE%89%E8%A3%85/</guid>
+      <description>Eigen下载地址：http://eigen.tuxfamily.org/index.php?title=Main_Page
+运行命令：sudo tar -xzvf eigen-eigen-5a0156e40feb.tar.gz -C /usr/local/include
+其中，tar -xzvf ...tar.gz表示解压tar.gz文件，-C表示建立解压缩档案，eigen文件名需要对应修改。
+运行命令：sudo mv /usr/local/include/eigen-eigen-5a0156e40feb /usr/local/include/eigen3
+这条命令将下载的eigen文件重命名为eigen3。
+运行命令：sudo cp -r /usr/local/include/eigen3/Eigen /usr/local/include 
+cp指令 cp -r /usr/men /usr/zh 将目录/usr/men下的所有文件及其子目录复制到目录/usr/zh中。这样做是为了使某些程序能够找到eigen，在很多程序中include时经常使用#include &amp;lt;Eigen/Dense&amp;gt;而不是使用#include &amp;lt;eigen3/Eigen/Dense&amp;gt;所以要做下处理，否则一些程序在编译时会因找不到Eigen/Dense而报错。</description>
+    </item>
+    
+    <item>
+      <title>Ubuntu 安装中文输入法</title>
+      <link>https://lxli1996.github.io/post/ubuntu%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95/</link>
+      <pubDate>Sat, 05 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/ubuntu%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95/</guid>
+      <description>安装fcitx，Ubuntu上一般自带
+sudo apt-get install fcitx安装谷歌拼音输入法
+sudo apt-get install fcitx-googlepinyin启用fcitx
+进入系统设置(System Setting)-&amp;gt;语言支持(Language Support)
+在最后一项即keyboard input method system中选择fcitx。
+重启电脑
+在终端输入
+fcitx-configtool进入设置页面
+点击左下角的+号添加输入法，在only show curent language这里不要选中，如果你的系统是英文的，就不会显示安装的中文输入法。
+选择Google Pinyin，再点击OK。</description>
+    </item>
+    
+  </channel>
+</rss>

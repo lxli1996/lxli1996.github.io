@@ -7,23 +7,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Tags - </title>
-    <meta property="og:title" content="Tags - ">
+    <title>Ubuntu 1604 Eigen3安装 - </title>
+    <meta property="og:title" content="Ubuntu 1604 Eigen3安装 - ">
     <meta property="og:type" content="article">
         
+    <meta property="article:published_time" content="2020-12-05T14:03:43&#43;08:00">
         
-    <meta name="description" content="Tags">
+        
+    <meta property="article:modified_time" content="2020-12-05T14:03:43&#43;08:00">
+        
+    <meta name="description" content="Eigen3源码安装
+">
         
     <meta name="author" content="">
-    <meta property="og:url" content="https://lxli1996.github.io/tags/">
+    <meta property="og:url" content="https://lxli1996.github.io/post/ubuntu_eigen3%E5%AE%89%E8%A3%85/">
 
-    <link rel="alternate" type="application/rss&#43;xml" href="https://lxli1996.github.io/tags/index.xml" title="">
     <link rel="stylesheet" href="/css/normalize.css">
+    
+    <link rel="stylesheet" href="/css/syntax.css">
     
     <link rel="stylesheet" href="/css/style.css">
 
     </head>
-
 
 <body>
 <header id="header" class="clearfix">
@@ -39,7 +44,7 @@
             </div>
             <div>
                 <nav id="nav-menu" class="clearfix">
-                    <a  href="https://lxli1996.github.io">首页</a>
+                    <a class="current" href="https://lxli1996.github.io">首页</a>
                     
                 </nav>
             </div>
@@ -54,24 +59,43 @@
 
             <div class="col-8" id="main">
                 <div class="res-cons">
-                    
-                    <h1>共有1个标签</h1>
-                    
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">Ubuntu 1604 Eigen3安装</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2020年12月5日
+                            14:03
+                        </date>
+                        
+                        <div class="post-meta meta-category">
+                            ，归类于
+                            
+                                <a href="/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">解决方案</a>
+                            
+                        </div>
+                        <div class="post-content">
+                            <p>Eigen下载地址：<code>http://eigen.tuxfamily.org/index.php?title=Main_Page</code></p>
+<p>运行命令：<code>sudo tar -xzvf eigen-eigen-5a0156e40feb.tar.gz -C /usr/local/include</code></p>
+<p>其中，<code>tar -xzvf ...tar.gz</code>表示解压tar.gz文件，<code>-C</code>表示建立解压缩档案，eigen文件名需要对应修改。</p>
+<p>运行命令：<code>sudo mv /usr/local/include/eigen-eigen-5a0156e40feb /usr/local/include/eigen3</code></p>
+<p>这条命令将下载的eigen文件重命名为eigen3。</p>
+<p>运行命令：<code>sudo cp -r /usr/local/include/eigen3/Eigen /usr/local/include </code></p>
+<p>cp指令 cp -r /usr/men /usr/zh 将目录/usr/men下的所有文件及其子目录复制到目录/usr/zh中。这样做是为了使某些程序能够找到eigen，在很多程序中include时经常使用#include &lt;Eigen/Dense&gt;而不是使用#include &lt;eigen3/Eigen/Dense&gt;所以要做下处理，否则一些程序在编译时会因找不到Eigen/Dense而报错。</p>
 
+                        </div>
+
+                        <div class="post-meta meta-tags">
+                            
+                            没有标签
+                            
+                        </div>
+                    </article>
                     
-                    <h2><a href="/tags/%E4%B9%A6%E5%8D%95">书单</a> (1)</h2>
-                    <ul>
-                        
-                        <li>
-                            <date class="meta-date">2020/12/05</date>
-                            <a class="archive-title" href="https://lxli1996.github.io/post/2020%E4%B9%A6%E5%8D%95/">2020书单</a>
-                        </li>
-                        
-                    </ul>
-                    
+                    <div id="comments"><span class="widget-title"></span></div>
+
                 </div>
             </div>
-
             <div id="secondary">
     <section class="widget">
         
@@ -151,7 +175,6 @@
 <script type="text/javascript" src="/js/app.js" defer></script>
 
 <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' defer></script>
-
 
 
 </body>

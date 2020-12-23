@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="zh-hans">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.79.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>统计学习方法7 - </title>
+    <meta property="og:title" content="统计学习方法7 - ">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2020-12-06T14:03:43&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2020-12-06T14:03:43&#43;08:00">
+        
+    <meta name="description" content="统计学习方法7
+">
+        
+    <meta name="author" content="">
+    <meta property="og:url" content="https://lxli1996.github.io/post/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E7%AC%94%E8%AE%B07/">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    </head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://lxli1996.github.io">
+                        
+                    </a>
+                
+                
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://lxli1996.github.io">首页</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">统计学习方法7</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2020年12月6日
+                            14:03
+                        </date>
+                        
+                        <div class="post-meta meta-category">
+                            ，归类于
+                            
+                                <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">统计学习方法</a>
+                            
+                        </div>
+                        <aside id="toc" class="dismissed">
+                            <span class="toc-title">目录 <a href="#" class="toc-dismiss"></a></span>
+                            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#第8章提升方法">第8章提升方法</a>
+      <ul>
+        <li><a href="#adaboost算法">Adaboost算法</a></li>
+        <li><a href="#adaboost算法的训练误差分析">Adaboost算法的训练误差分析</a></li>
+        <li><a href="#adaboost算法的解释">Adaboost算法的解释</a></li>
+        <li><a href="#提升树">提升树</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+                        </aside><div class="post-content">
+                            <h2 id="第8章提升方法">第8章提升方法</h2>
+<p>提升(boosting)方法是一种常用的统计学习方法，在分类问题中，它通过改变训练样本的权重，学习多个分类器，并将这些分类器进行线性组合，提高分类的性能。</p>
+<p>对于分类问题，给定一个训练样本集，求比较粗糙的分类规则(弱分类器)要比求精确的分类规则(强分类器)容易得多。提升方法就是从弱分类器算法触发，反复学习，得到一系列弱分类器(又称为基本分类器)，然后组合这些弱分类器，构成强分类器。大多数的提升方法都是改变训练数据的概率分布(训练数据的权重分布)，针对不同的训练数据分布调用弱学习算法学习一系列弱分类器。</p>
+<p>对于提升方法来说，这产生两个问题：</p>
+<ol>
+<li>
+<p>每一轮如何改变训练数据的权值或者概率分布。</p>
+<p>Adaboost的做法是提高那些被前一轮弱分类器错误分类样本的权值，而降低那些被正确分类样本的权值。因此，那些没有得到正确分类的数据，由于其权值的加大而受到后一轮弱分类器的更大关注。</p>
+</li>
+<li>
+<p>如果将弱分类器组合成一个强分类器。</p>
+<p>Adaboost采取加权多数表决的方法。加大分类器误差小的弱分类器的权值，使其在表决中起较大作用，减小误差率大的弱分类器的权值，降低其在表决中的作用。</p>
+</li>
+</ol>
+<h3 id="adaboost算法">Adaboost算法</h3>
+<ul>
+<li>输入：训练数据集$T={(x_1,y_1), (x_2,y_2),&hellip;,(x_N,y_N)}, x\in  \cal X\subset R^n$, 弱学习方法</li>
+<li>输出：最终分类器$G(x)$</li>
+</ul>
+<p>步骤：</p>
+<ol>
+<li>
+<p>初始化训练数据的权值分布 $D_1=(w_{11},\cdots,w_{1i},\cdots,w_{1N},w_{1i}=\frac{1}{N})$，初始化为均匀分布</p>
+</li>
+<li>
+<p>$m = 1,2, \dots,M$</p>
+<ol>
+<li>
+<p>$G_m(x):X\to{-1,+1}$</p>
+</li>
+<li>
+<p>求$G_m$在训练集上的分类误差率<br>
+$$
+e_m=\sum_{i=1}^{N}P(G_m(x_i)\ne y_i)=\sum_{i=1}^{N}w_{mi}I(G_m(x_i)\ne y_i)
+$$</p>
+</li>
+<li>
+<p>计算$G_m(x)$的系数，这里的对数是自然对数。
+$$
+\alpha_m=\frac{1}{2}log\frac{1-e_m}{e_m}
+$$</p>
+</li>
+<li>
+<p>更新训练数据集的权值分布，
+$$
+D_{m+1}=(w_{m+1,1},\dots,w_{m+1,i},\dots,w_{m+1,N})
+$$</p>
+<p>$$
+w_{m+1,i}=\frac{w_{mi}}{Z_m}exp(-\alpha_my_iG_m(x_i))，i=1,2,\dots,N
+$$</p>
+</li>
+<li>
+<p>$Z_m$是规范化因子，它使$D_{m+1}$成为一个概率分布。
+$$
+Z_m=\sum_{i=1}^Nw_{mi}exp(-\alpha_my_iG_m(x_i))
+$$</p>
+</li>
+</ol>
+</li>
+<li>
+<p>构建基本分类器的线性组合
+$$
+f(x)=\sum_{m=1}^M\alpha_mG_m(x)
+$$</p>
+</li>
+<li>
+<p>最终分类器
+$$
+G(x)=sign(f(x))=sign(\sum_{m=1}^M\alpha_mG_m(x))
+$$</p>
+</li>
+</ol>
+<h3 id="adaboost算法的训练误差分析">Adaboost算法的训练误差分析</h3>
+<p>Adaboost的训练误差界：</p>
+<p>Adaboost算法最终分类器的训练误差界为：
+$$
+\frac{1}{N}\sum\limits_{i=1}\limits^N I(G(x_i)\neq y_i)\le\frac{1}{N}\sum\limits_i\exp(-y_i f(x_i))=\prod\limits_m Z_m
+$$</p>
+<h3 id="adaboost算法的解释">Adaboost算法的解释</h3>
+<h4 id="前向分步算法">前向分步算法</h4>
+<p>输入：训练数据集$T={(x_1,y_1),(x_2,y_2),&hellip;,(x_N, y_N)}, x_i \in \cal X \subset R^n, y_i\in {-1, 1}$， 损失函数$L(y, f(x))$; 基函数集合${b(x;\gamma)}$</p>
+<p>输出：加法模型$f(x)$</p>
+<p>步骤：</p>
+<ol>
+<li>
+<p>初始化$f_0(x)=0$</p>
+</li>
+<li>
+<p>对$m=1,2,\dots,M$</p>
+</li>
+<li>
+<p>极小化损失函数
+$$
+(\beta_m,\gamma_m)=\arg\min \limits_ {\beta,\gamma}\sum_{i=1}^NL(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma))
+$$</p>
+</li>
+<li>
+<p>更新
+$$
+f_m(x)=f_{m-1}(x)+\beta _mb(x;\gamma_m)
+$$</p>
+</li>
+<li>
+<p>得到加法模型
+$$
+f(x)=f_M(x)=\sum_{m=1}^M\beta_m b(x;\gamma_m)
+$$</p>
+</li>
+</ol>
+<h3 id="提升树">提升树</h3>
+<p>提升树被认为是统计学习中性能最好的方法之一。</p>
+<p>提升方法采用加法模型(即基函数的线性组合)与前向分步算法。以决策树为基函数的提升方法称为提升树(boost tree)。对分类问题决策树是二叉分类树，对回归问题决策树是二叉回归树。提升树模型可以表示为决策树的加法模型：
+$$
+f_M(x)=\sum_{m=1}^MT(x;\Theta_m)
+$$
+其中，$T(x;\Theta_m)$表示决策树。</p>
+<h4 id="回归问题的提升树算法">回归问题的提升树算法</h4>
+<p>平方误差用于回归问题，指数损失用于分类问题。</p>
+<p>输入：训练数据集</p>
+<p>输出：提升树$f_M(x)$</p>
+<p>步骤：</p>
+<ol>
+<li>
+<p>初始化$f_0(x)=0$</p>
+</li>
+<li>
+<p>对$m=1,2,\dots,M$</p>
+<ol>
+<li>计算残差</li>
+</ol>
+<p>$$
+r_{mi}=y_i-f_{m-1}(x_i), i=1,2,\dots,N
+$$</p>
+<ol>
+<li><strong>拟合残差</strong>$r_{mi}$学习一个回归树，得到$T(x;\Theta_m)$</li>
+<li>更新$f_m(x)=f_{m-1}(x)+T(x;\Theta_m)$</li>
+</ol>
+</li>
+<li>
+<p>得到回归问题提升树
+$$
+f(x)=f_M(x)=\sum_{m=1}^MT(x;\Theta_m)
+$$</p>
+</li>
+</ol>
+<h4 id="梯度提升树gbdt">梯度提升树(GBDT)</h4>
+<p>输入： 训练数据集$T={(x_1,y_1),(x_2,y_2),\dots,(x_N,y_N)}, x_i \in \cal x \subset R^n, y_i \in \cal y \subset R$；损失函数$L(y,f(x))$
+输出：回归树$\hat{f}(x)$
+步骤：</p>
+<ol>
+<li>
+<p>初始化
+$$
+f_0(x)=\arg\min\limits_c\sum_{i=1}^NL(y_i, c)
+$$</p>
+</li>
+<li>
+<p>$m=1,2,\dots,M$</p>
+</li>
+<li>
+<p>$i=1,2,\dots,N$
+$$
+r_{mi}=-\left[\frac{\partial L(y_i, f(x_i))}{\partial f(x_i)}\right]_{f(x)=f_{m-1}(x)}
+$$</p>
+</li>
+<li>
+<p>对$r_{mi}$拟合一个回归树，得到第$m$棵树的叶节点区域$R_{mj}, j=1,2,\dots,J$</p>
+</li>
+<li>
+<p>$j=1,2,\dots,J$
+$$
+c_{mj}=\arg\min_c\sum_{xi\in R_{mj}}L(y_i,f_{m-1}(x_i)+c)
+$$</p>
+</li>
+<li>
+<p>更新
+$$
+f_m(x)=f_{m-1}(x)+\sum_{j=1}^Jc_{mj}I(x\in R_{mj})
+$$</p>
+</li>
+<li>
+<p>得到回归树
+$$
+\hat{f}(x)=f_M(x)=\sum_{m=1}^M\sum_{j=1}^Jc_{mj}I(x\in R_{mj})
+$$</p>
+</li>
+</ol>
+
+                        </div>
+
+                        <div class="post-meta meta-tags">
+                            
+                            没有标签
+                            
+                        </div>
+                    </article>
+                    
+                    <div id="comments"><span class="widget-title"></span></div>
+
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        
+    
+<form id="search" action="https://www.google.com/search" method="get" accept-charset="utf-8" target="_blank">
+    <input type="text" name="q" maxlength="255" placeholder="搜索...">
+    <input type="hidden" name="sitesearch" value="">
+    <button type="submit" class="submit icon-search"></button>
+</form>
+
+
+
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+        <ul class="widget-list">
+            
+            <li>
+                <a href="/categories/c&#43;&#43;">
+                    c&#43;&#43; (3)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/markdown">
+                    markdown (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E4%B9%A6%E5%8D%95">
+                    书单 (1)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">
+                    统计学习方法 (10)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%86%E8%A7%89">
+                    视觉 (6)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">
+                    解决方案 (11)
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+      &copy; 2020 <a rel="nofollow" href="https://lxli1996.github.io"></a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io">Hugo</a> &amp; <a rel="nofollow noreferer noopener" href="https://github.com/JokerQyou/maupassant-hugo">maupassant theme</a>.
+    </div>
+</footer>
+
+<script type="text/javascript" src="/js/app.js" defer></script>
+
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' defer></script>
+
+
+</body>
+</html>
