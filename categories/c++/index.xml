@@ -1,48 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>C&#43;&#43; on </title>
-    <link>https://lxli1996.github.io/categories/c&#43;&#43;/</link>
-    <description>Recent content in C&#43;&#43; on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-hans</language>
-    <lastBuildDate>Fri, 11 Dec 2020 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/c++/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>C中的陷阱</title>
-      <link>https://lxli1996.github.io/post/c%E4%B8%AD%E7%9A%84%E9%99%B7%E9%98%B1/</link>
-      <pubDate>Fri, 11 Dec 2020 14:03:43 +0800</pubDate>
-      
-      <guid>https://lxli1996.github.io/post/c%E4%B8%AD%E7%9A%84%E9%99%B7%E9%98%B1/</guid>
-      <description>C语言中无符号变量与有符号变量之间的变换，会产生一些意外的问题：
-for(unsigned short i=5;i&amp;gt;=0;i--){ cout&amp;lt;&amp;lt;i&amp;lt;&amp;lt;endl; } 在这个例子里面，变量i是一个无符号变量，当其自减到0时，再自减他会变为二进制的1111111111111111，即十进制的65535，此时这个值是大于0的，仍然不满足跳出条件，因此for会陷入死循环无法跳出。
-for(short i=5;i-sizeof(unsigned char)&amp;gt;=0;i--){ cout&amp;lt;&amp;lt;i&amp;lt;&amp;lt;endl; } 在这个例子里面，sizeof()返回的是一个无符号类型，i减无符号类型获得的还是无符号类型，因此i-sizeof(unsigned char)&amp;gt;=0永远成立，这个for同样会陷入死循环。
-一种安全的写法如下：
-size_t i; for(i =cnt-2;i&amp;lt;cnt;i--) a[i]+=a[i+1]; 当i自减到临界值，对于无符号类型变量，0减1变为UMax，即无符号类型的最大值，这时不符合条件，跳出。程序会被正确执行。</description>
-    </item>
-    
-    <item>
-      <title>std::condition_variable</title>
-      <link>https://lxli1996.github.io/post/condition_variable/</link>
-      <pubDate>Fri, 11 Dec 2020 14:03:43 +0800</pubDate>
-      
-      <guid>https://lxli1996.github.io/post/condition_variable/</guid>
-      <description>std::condition_variable是条件变量，他常用于线程的控制。
-当std::condition_variable对象的某个wait函数被调用时，它使用std::unique_lock(通过std::mutex)来锁住当前线程。当前线程会一直阻塞，直到另一线程在相同的std::condition_variable对象上调用了notify函数来唤醒当前线程。一个例子如下：
-void Backend::BackendLoop() { while (backend_running_.load()) { std::unique_lock&amp;lt;std::mutex&amp;gt; lock(data_mutex_); map_update_.wait(lock); //其他操作....  } } void Backend::UpdateMap() { std::unique_lock&amp;lt;std::mutex&amp;gt; lock(data_mutex_); map_update_.notify_one(); } 当调用UpdateMap函数时会唤醒BackendLoop所在线程继续向下执行。
-notify_one()和notify_all():
-notify_one()因为只唤醒一个线程，不存在锁争用，所以能够立即获得锁。其余的线程不会被唤醒，需要等待再次调用notify_one()或者notify_all()。
-notify_all()会唤醒所有阻塞的线程，存在锁争用，只有一个线程能够获得锁。那其余未获取锁的线程接着会怎么样？会阻塞？还是继续尝试获得锁？答案是会继续尝试获得锁(类似于轮询)，而不会再次阻塞。当持有锁的线程释放锁时，这些线程中的一个会获得锁。而其余的会接着尝试获得锁。</description>
-    </item>
-    
-    <item>
-      <title>C&#43;&#43;11中的随机数</title>
-      <link>https://lxli1996.github.io/post/c&#43;&#43;11%E4%B8%AD%E7%9A%84%E9%9A%8F%E6%9C%BA%E6%95%B0/</link>
-      <pubDate>Sun, 06 Dec 2020 14:03:43 +0800</pubDate>
-      
-      <guid>https://lxli1996.github.io/post/c&#43;&#43;11%E4%B8%AD%E7%9A%84%E9%9A%8F%E6%9C%BA%E6%95%B0/</guid>
-      <description>均匀分布：  uniform_int_distribution 整数均匀分布uniform_real_distribution 浮点数均匀分布 伯努利类型分布： （仅有yes/no两种结果，概率一个p，一个1-p）
- bernoulli_distribution 伯努利分布binomial_distribution 二项分布geometry_distribution 几何分布negative_biomial_distribution 负二项分布 Rate-based distributions:  poisson_distribution 泊松分布exponential_distribution指数分布gamma_distribution 伽马分布weibull_distribution 威布尔分布extreme_value_distribution 极值分布 正态分布相关：  normal_distribution 正态分布chi_squared_distribution卡方分布cauchy_distribution 柯西分布fisher_f_distribution 费歇尔F分布student_t_distribution t分布 分段分布相关：  discrete_distribution离散分布piecewise_constant_distribution分段常数分布piecewise_linear_distribution分段线性分布 代码： //需要添加头文件:#include&amp;lt;random&amp;gt; 	//如果使用cmake编译，需要在cmakelists.txt中添加:add_definitions(-std=c++11) 	std::default_random_engine e;//生成随机无符合数 	for(int i=0;i&amp;lt;10;i++) cout&amp;lt;&amp;lt;e()&amp;lt;&amp;lt;&amp;#34; &amp;#34;; cout&amp;lt;&amp;lt;endl; std::uniform_int_distribution&amp;lt;unsigned&amp;gt; u(0,9);//生成0到9之间的均匀分布的随机数 	std::default_random_engine e1; for(int i=0;i&amp;lt;10;i++){ cout&amp;lt;&amp;lt;u(e1)&amp;lt;&amp;lt;&amp;#34; &amp;#34;;//这样每次生成的都是同样的数 	} cout&amp;lt;&amp;lt;endl; static std::uniform_int_distribution&amp;lt;unsigned&amp;gt; stau(0,9); static std::default_random_engine stae1; for(int i=0;i&amp;lt;10;i++){ cout&amp;lt;&amp;lt;stau(stae1)&amp;lt;&amp;lt;&amp;#34; &amp;#34;;//第一次调用 	} cout&amp;lt;&amp;lt;endl; for(int i=0;i&amp;lt;10;i++){ cout&amp;lt;&amp;lt;stau(stae1)&amp;lt;&amp;lt;&amp;#34; &amp;#34;;//第二次调用，可以看到两次调用结果不同 	} cout&amp;lt;&amp;lt;endl; //另一种生成不同随机数的方法是设置随机数种子 	//需要添加头文件：#include&amp;lt;ctime&amp;gt; 	//同时需要注意到，time返回以秒为单位的时间，因此这种方法只适用于生成种子的间隔为秒级或更长的应用 	std::default_random_engine seede2(time(0)); std::uniform_int_distribution&amp;lt;unsigned&amp;gt; seedu(0,9); for(int i=0;i&amp;lt;3;i++){ for(int j=0;j&amp;lt;10;j++){ cout&amp;lt;&amp;lt;seedu(seede2)&amp;lt;&amp;lt;&amp;#34; &amp;#34;; } cout&amp;lt;&amp;lt;endl; } //其他随机数分布 	std::uniform_real_distribution&amp;lt;double&amp;gt; realu(0,1);//生成0到1的浮点数 	for(int i=0;i&amp;lt;10;i++){ cout&amp;lt;&amp;lt;realu(seede2)&amp;lt;&amp;lt;&amp;#34; &amp;#34;; } cout&amp;lt;&amp;lt;endl; //正态分布 	std::normal_distribution&amp;lt;double&amp;gt; normald(1,2); for(int i=0;i&amp;lt;10;i++){ cout&amp;lt;&amp;lt;normald(seede2)&amp;lt;&amp;lt;&amp;#34; &amp;#34;; } cout&amp;lt;&amp;lt;endl; //mt199337是c++11中加入的新特征。 	//它是一种随机数算法，用法与rand()函数类似，具有速度快周期长的特点(它的名字来自周期长度:2^19937-1) 	//rand()在windows下生成的数据范围为0到32767，但这个函数的随机范围大概为(INT_MIN,INT_MAX) 	std::mt19937 rnd(time(0)); for(int i=0;i&amp;lt;10;i++){ cout&amp;lt;&amp;lt;rnd()&amp;lt;&amp;lt;&amp;#34; &amp;#34;; } cout&amp;lt;&amp;lt;endl; </description>
-    </item>
-    
-  </channel>
-</rss>
