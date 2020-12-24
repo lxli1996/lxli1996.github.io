@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>unity on </title>
+    <link>https://lxli1996.github.io/categories/unity/</link>
+    <description>Recent content in unity on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-hans</language>
+    <lastBuildDate>Sat, 12 Dec 2020 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/unity/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>computeShader基本概念</title>
+      <link>https://lxli1996.github.io/post/computershader%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</link>
+      <pubDate>Sat, 12 Dec 2020 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/computershader%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</guid>
+      <description>基本概念
+https://www.jianshu.com/p/f28ab7494975
+https://blog.csdn.net/weixin_38884324/article/details/80570160
+基本使用
+https://www.cnblogs.com/sifenkesi/p/11374615.html</description>
+    </item>
+    
+  </channel>
+</rss>

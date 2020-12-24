@@ -7,28 +7,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>std::condition_variable - </title>
-    <meta property="og:title" content="std::condition_variable - ">
+    <title>unity - </title>
+    <meta property="og:title" content="unity - ">
     <meta property="og:type" content="article">
         
-    <meta property="article:published_time" content="2020-12-11T14:03:43&#43;08:00">
         
-        
-    <meta property="article:modified_time" content="2020-12-11T14:03:43&#43;08:00">
-        
-    <meta name="description" content="std::condition_variable
-">
+    <meta name="description" content="unity">
         
     <meta name="author" content="">
-    <meta property="og:url" content="https://lxli1996.github.io/post/condition_variable/">
+    <meta property="og:url" content="https://lxli1996.github.io/categories/unity/">
 
+    <link rel="alternate" type="application/rss&#43;xml" href="https://lxli1996.github.io/categories/unity/index.xml" title="">
     <link rel="stylesheet" href="/css/normalize.css">
-    
-    <link rel="stylesheet" href="/css/syntax.css">
     
     <link rel="stylesheet" href="/css/style.css">
 
     </head>
+
 
 <body>
 <header id="header" class="clearfix">
@@ -44,7 +39,7 @@
             </div>
             <div>
                 <nav id="nav-menu" class="clearfix">
-                    <a class="current" href="https://lxli1996.github.io">首页</a>
+                    <a  href="https://lxli1996.github.io">首页</a>
                     
                 </nav>
             </div>
@@ -59,53 +54,52 @@
 
             <div class="col-8" id="main">
                 <div class="res-cons">
-                    <article class="post">
-                        <header>
-                            <h1 class="post-title">std::condition_variable</h1>
-                        </header>
-                        <date class="post-meta meta-date">
-                            2020年12月11日
-                            14:03
-                        </date>
-                        
-                        <div class="post-meta meta-category">
-                            ，归类于
-                            
-                                <a href="/categories/c&#43;&#43;">C&#43;&#43;</a>
-                            
-                        </div>
-                        <div class="post-content">
-                            <p>std::condition_variable是条件变量，他常用于线程的控制。</p>
-<p>当std::condition_variable对象的某个wait函数被调用时，它使用std::unique_lock(通过std::mutex)来锁住当前线程。当前线程会一直阻塞，直到另一线程在相同的std::condition_variable对象上调用了notify函数来唤醒当前线程。一个例子如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">void</span> Backend<span style="color:#f92672">::</span>BackendLoop() {
-    <span style="color:#66d9ef">while</span> (backend_running_.load()) {
-        std<span style="color:#f92672">::</span>unique_lock<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>mutex<span style="color:#f92672">&gt;</span> lock(data_mutex_);
-        map_update_.wait(lock);
-		<span style="color:#75715e">//其他操作....
-</span><span style="color:#75715e"></span>    }
-}
-<span style="color:#66d9ef">void</span> Backend<span style="color:#f92672">::</span>UpdateMap() {
-    std<span style="color:#f92672">::</span>unique_lock<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>mutex<span style="color:#f92672">&gt;</span> lock(data_mutex_);
-    map_update_.notify_one();
-}
-</code></pre></div><p>当调用UpdateMap函数时会唤醒BackendLoop所在线程继续向下执行。</p>
-<p><strong>notify_one()和notify_all():</strong></p>
-<p><code>notify_one()</code>因为只唤醒一个线程，不存在锁争用，所以能够立即获得锁。其余的线程不会被唤醒，需要等待再次调用<code>notify_one()</code>或者<code>notify_all()</code>。</p>
-<p><code>notify_all()</code>会唤醒所有阻塞的线程，存在锁争用，只有一个线程能够获得锁。那其余未获取锁的线程接着会怎么样？会阻塞？还是继续尝试获得锁？答案是会继续尝试获得锁(类似于轮询)，而不会再次阻塞。当持有锁的线程释放锁时，这些线程中的一个会获得锁。而其余的会接着尝试获得锁。</p>
-
-                        </div>
-
-                        <div class="post-meta meta-tags">
-                            
-                            没有标签
-                            
-                        </div>
-                    </article>
                     
-                    <div id="comments"><span class="widget-title"></span></div>
+                    <h1>
+                        分类
+                        <span class="keyword">unity</span>
+                        中的文章
+                    </h1>
+                    
+
+                    
+                        <article class="post">
+                            <header>
+                                <h2 class="post-title">
+                                    <a href="https://lxli1996.github.io/post/computershader%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/">computeShader基本概念</a>
+                                </h2>
+                            </header>
+                            <date class="post-meta meta-date">
+                                2020年12月12日
+                                14:03
+                            </date>
+                            
+                            <div class="post-meta meta-category">
+                                ，归类于
+                                
+                                    <a href="/categories/unity">unity</a>
+                                
+                            </div>
+                            
+                            
+                            <div class="post-content summary manual">
+                                
+                                
+                                    computeShader基本概念
+                                
+                            </div>
+                            <p class="readmore"><a href="https://lxli1996.github.io/post/computershader%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/">阅读全文</a></p>
+                        </article>
+                    
+
+                    
+
+
+
 
                 </div>
             </div>
+
             <div id="secondary">
     <section class="widget">
         
@@ -191,6 +185,7 @@
 <script type="text/javascript" src="/js/app.js" defer></script>
 
 <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' defer></script>
+
 
 
 </body>
