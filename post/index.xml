@@ -17,6 +17,42 @@
     </item>
     
     <item>
+      <title>初始化和部署Hololens工程</title>
+      <link>https://lxli1996.github.io/post/%E5%88%9D%E5%A7%8B%E5%8C%96%E5%92%8C%E9%83%A8%E7%BD%B2hololens%E5%B7%A5%E7%A8%8B/</link>
+      <pubDate>Sat, 02 Jan 2021 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/%E5%88%9D%E5%A7%8B%E5%8C%96%E5%92%8C%E9%83%A8%E7%BD%B2hololens%E5%B7%A5%E7%A8%8B/</guid>
+      <description>创建Unity项目 启动unity中心，选择项目选项卡，点击新建按钮旁边的向下箭头，在下拉列表中选择对应的Unity版本，hololens要求unity版本为2019.1以上。在创建项目过程中，要确保将模板设置为3D。
+切换生成平台 在unity菜单中选择文件-&amp;gt;生成设置(Build Settings)，打开生成设置窗口。
+在生成设置窗口中选择通用Windows平台(Universal Windows Platform)，然后单击切换平台按钮(Switch Platform)
+当unity完成平台切换后，关闭生成设置窗口
+导入TestMeshPro基本资源 在unity菜单中，选择窗口-&amp;gt;TextMeshPro-&amp;gt;导入TMP基本资源(Import TMP Essential Resources)
+在导入unity包窗口中单击全部按钮(All)，确保选择所有资产，然后点击导入按钮以导入资产
+导入混合现实工具包 下载unity自定义包：
+https://github.com/microsoft/MixedRealityToolkit-Unity/releases，这里是所有与Hololens相关的包，我们需要下载Micrsoft.MixedReality.Toolkit.Unity.Foundation.2.4.0.unitypackage。在unity菜单中选择资产(Asset)-&amp;gt;导入包(import Package)-&amp;gt;自定义包(custom package)。
+在导入包窗口中，选择下载的Microsoft.MixedReality.Toolkit.Unity.Foundation.2.4.0.unitypackage，然后单击打开按钮
+在导入unity包窗口中单击全部按钮，确保选择所有资产，然后单击导入按钮以导入资产
+配置Unity项目 1.应用MRTK项目配置器设置 unity完成上一部分中的导入包操作后，应显示MRTK项目配置器窗口。如果没有显示该窗口，请转到混合现实工具包(Mixed Reality Toolkit)-&amp;gt;实用程序(Utilities)-&amp;gt;配置unity项目(configure unity project)。
+在MRTK项目配置器窗口中，展开修改配置部分，确保勾选所有选项，然后点击应用按钮以应用设置
+2.配置其他项目设置 在unity菜单中选择编辑(edit)-&amp;gt;项目设置(project setting)，打开项目设置窗口
+在项目设置窗口中，选择播放器-&amp;gt;XR设置，单击+图标，然后选择windows Minxed Reality以添加Windows Mixed Reality SDK
+unity导入完Windows Mixed Reality SDK后，应再次显示MRTK项目配置器窗口，如果未显示，请使用unity菜单打开它。
+在MRTK项目配置器窗口中，使用音频空间定位器(Audio spatializer)下拉列表选择MS HRTF Spatializer，然后单击应用按钮以应用该设置
+在项目设置窗口中，选择播放器-&amp;gt;XR设置，然后使用深度格式下拉列表选择16位深度。
+在项目设置窗口中选择播放器-&amp;gt;发布设置，然后在包名称字段中，输入合适的名称，如MRTKTutorials-GettingStarted。
+创建和配置场景 在unity菜单中，选择文件-&amp;gt;新建场景，以创建新场景
+在unity菜单中，选择混合现实工具包-&amp;gt;添加到场景并配置，将MRTK添加到当前场景
+仍在层次结构窗口中选中MixedRealityToolkit对象，在“检查器”窗口中验证MixedRealityToolkit配置文件是否已设置为DefaultMixedRealityToolkitConfigurationProfile
+在unity菜单中选择文件-&amp;gt;另存为，打开保存场景窗口，并保存当前场景
+将应用程序构建到Hololens2 1.生成unity项目 在unity菜单中选择文件-&amp;gt;生成设置，打开生成设置窗口
+在生成设置窗口中单击添加打开的场景按钮，将当前场景添加到生成中的场景列表，点击生成，选择生成文件保存的位置，等待unity完成生成的过程。
+2.生成并部署应用程序 生成过程完成后，unity打开你存储生成的位置，找到解决方案，双击它，在visual studio中将其打开。
+通过选择Master配置或发布配置，ARM64体系结构和设备作为目标，配置visual studio for hololens
+在生成并配置到设备之前，需要开启hololens的开发人员模式，使visual studio能够连接到该设备
+  Hololens:</description>
+    </item>
+    
+    <item>
       <title>树莓派4B部署Openwrt</title>
       <link>https://lxli1996.github.io/post/%E6%A0%91%E8%8E%93%E6%B4%BEopenwrt/</link>
       <pubDate>Sat, 19 Dec 2020 14:03:43 +0800</pubDate>
