@@ -6,7 +6,23 @@
     <description>Recent content in C&#43;&#43; on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
-    <lastBuildDate>Fri, 11 Dec 2020 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/c++/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 08 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/c++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>effective C&#43;&#43;1</title>
+      <link>https://lxli1996.github.io/post/effective-c&#43;&#43;/</link>
+      <pubDate>Fri, 08 Jan 2021 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/effective-c&#43;&#43;/</guid>
+      <description>本文的相关术语使用&amp;laquo;effective C++&amp;raquo;中的表示方法。
+术语 初始化 初始化是给予对象初值的过程，对用户自定义类型的对象而言，初始化由构造函数执行。default构造函数是一个可被调用而不带任何实参数。这样的构造函数要不没有参数，要不就是每个参数都有缺省值。
+class A{ public: A();//default构造函数 }; class B{ public: explicit B(int x=0,bool b=true);//default构造函数 }; class C{ public: explicit C(int x);//不是default构造函数 } 上述的classes B和C的构造函数都被声明为explicit，这可以阻止他们被用来执行隐式类型转换(implicit type conversions)，但他们仍可以被用来进行显式类型转换(explicit type conversions)。
+void doSomething(B bObject);//一个函数，接收一个类型为B的对象 B bObj1; doSomething(bObj1);//正确 doSomething(28);//错误，int和B之间没有隐式转换 doSomething(B(28));//正确，使用B构造函数将int显式转换为一个B以促成这一调用 被声明为explicit的构造函数禁止编译器执行非预期的类型转换，除非存在一个好理由允许构造函数被用于隐式类型转换，否则最好将其声明为explicit。
+tips:什么是隐式类型转换
+&amp;laquo;C++ Primer&amp;raquo;提到，可以用单个形参来调用的构造函数定义了从形参类型到该类类型的一个隐式转换。单个形参，不是说构造函数只能有一个形参，可以包含多个，但是形参必须是有默认实参的。
+因此，隐式转换即为：从构造函数形参类型到该类类型的一个编译器的自动转换。
+class BOOK //定义了一个书类 { private: string _bookISBN ; //书的ISBN号  float _price ; //书的价格  public: //定义了一个成员函数，这个函数即是那个“期待一个实参为类类型的函数”  //这个函数用于比较两本书的ISBN号是否相同  bool isSameISBN(const BOOK &amp;amp; other ){ return other.</description>
+    </item>
+    
     <item>
       <title>C中的陷阱</title>
       <link>https://lxli1996.github.io/post/c%E4%B8%AD%E7%9A%84%E9%99%B7%E9%98%B1/</link>

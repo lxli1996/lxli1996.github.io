@@ -6,7 +6,36 @@
     <description>Recent content in Posts on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
-    <lastBuildDate>Tue, 05 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 08 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>computeShader程序例子</title>
+      <link>https://lxli1996.github.io/post/computeshader/</link>
+      <pubDate>Fri, 08 Jan 2021 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/computeshader/</guid>
+      <description>compute shader 并行计算 虽然现在的CPU速度比十年前已经快很多了，但是随着CPU运行速度的提升，不可避免的会撞击功耗墙，因此大家将视线从提高CPU运行速度转向并行计算，进而衍生出GPU，CPU多核并行，以及超线程等。并行计算相关概念可以参考&amp;laquo;GPU高性能编程CUDA实战&amp;raquo;。
+compute shader compute shader就是并行计算的一种，它运行在GPU上，它将一个庞大的运算拆解为一个个小块，每一小块放在GPU的一个核心上运算。
+//这是一个CPU运行程序，虽然它可能没有什么意义 //在没有编译器进行的优化的前提下，只是单核CPU运行了1000000次 float data[1000000]; for(int i=0;i&amp;lt;1000000;i++){ data[i]+=rand(); } //对于GPU来说，每个GPU核心上只运行一次如下程序 //这样GPU将大量任务同时运行，减少程序运行时间 data[index]+=rand();//index表示GPU核心的索引 compute shader中的线程 上图是一个线程结构图，在compute shader中，我们使用Dispatch来构建一个线程结构，图中Dispatch(5,3,2)表示一个面上横向有5个线程组，纵向有3个线程组，存在2个面(2个维度)，因此共有5*3*2=30个线程组。然后我们取其中一个线程组(第一行第二列那个，即灰色格子的线程组，它的SV_GroupID为(2,1,0))，在这个线程组内，横向有10个线程，纵向有8个线程，包含3个维度。即每个线程组有10*8*3=240个线程。
+数据类型 常用的标量类型有：
+ bool int：32位有符号整数 uint：32位无符号整数 half：16位浮点数 float：32位浮点数 double：64位浮点数  例子 //这是一个compute shader程序 //定义computeShader的主要计算函数，这个函数会在c#层去绑定 //每一个computeShader可以有一个或者多个这样的定义，但是必须至少有一个 #pragma kernel CSMain  //对应c#里面调用ComputeShader.Dispatch方法里线程组的相关参数 #define thread_group_x 2 #define thread_group_y 2 #define thread_group_z 1  //每一个线程组里的线程定义，我们可以认为一个线程组是由x,y,z三维的线程数目来定义的 //下面这样的定义表示：一个线程组包括8*4*1个线程 //需要注意的是thread_x*thread_y*thread_z必须小于1024，否则报错，不信可以试试[手动狗头] #define thread_x 8 #define thread_y 4 #define thread_z 1  //数据结构的定义 struct MixData { int myVal; float myFloat; }; //传入数据的封装，它与c#层的的ComputeShader.</description>
+    </item>
+    
+    <item>
+      <title>effective C&#43;&#43;1</title>
+      <link>https://lxli1996.github.io/post/effective-c&#43;&#43;/</link>
+      <pubDate>Fri, 08 Jan 2021 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/effective-c&#43;&#43;/</guid>
+      <description>本文的相关术语使用&amp;laquo;effective C++&amp;raquo;中的表示方法。
+术语 初始化 初始化是给予对象初值的过程，对用户自定义类型的对象而言，初始化由构造函数执行。default构造函数是一个可被调用而不带任何实参数。这样的构造函数要不没有参数，要不就是每个参数都有缺省值。
+class A{ public: A();//default构造函数 }; class B{ public: explicit B(int x=0,bool b=true);//default构造函数 }; class C{ public: explicit C(int x);//不是default构造函数 } 上述的classes B和C的构造函数都被声明为explicit，这可以阻止他们被用来执行隐式类型转换(implicit type conversions)，但他们仍可以被用来进行显式类型转换(explicit type conversions)。
+void doSomething(B bObject);//一个函数，接收一个类型为B的对象 B bObj1; doSomething(bObj1);//正确 doSomething(28);//错误，int和B之间没有隐式转换 doSomething(B(28));//正确，使用B构造函数将int显式转换为一个B以促成这一调用 被声明为explicit的构造函数禁止编译器执行非预期的类型转换，除非存在一个好理由允许构造函数被用于隐式类型转换，否则最好将其声明为explicit。
+tips:什么是隐式类型转换
+&amp;laquo;C++ Primer&amp;raquo;提到，可以用单个形参来调用的构造函数定义了从形参类型到该类类型的一个隐式转换。单个形参，不是说构造函数只能有一个形参，可以包含多个，但是形参必须是有默认实参的。
+因此，隐式转换即为：从构造函数形参类型到该类类型的一个编译器的自动转换。
+class BOOK //定义了一个书类 { private: string _bookISBN ; //书的ISBN号  float _price ; //书的价格  public: //定义了一个成员函数，这个函数即是那个“期待一个实参为类类型的函数”  //这个函数用于比较两本书的ISBN号是否相同  bool isSameISBN(const BOOK &amp;amp; other ){ return other.</description>
+    </item>
+    
     <item>
       <title>git使用</title>
       <link>https://lxli1996.github.io/post/git%E4%BD%BF%E7%94%A8/</link>
