@@ -125,8 +125,8 @@
 <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">myscrpit</span> : MonoBehaviour
 {
     VisualEffect newVFX;<span style="color:#75715e">//创建一个visual effect graph
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> RateNum = <span style="color:#ae81ff">5</span>;<span style="color:#75715e">//visual effect graph中需要出入的数据
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">float</span> SizeNum = <span style="color:#ae81ff">20</span>;<span style="color:#75715e">//visual effect graph中需要出入的数据
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> RateNum = <span style="color:#ae81ff">2</span>;<span style="color:#75715e">//visual effect graph中需要输入的数据
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">float</span> SizeNum = <span style="color:#ae81ff">20</span>;<span style="color:#75715e">//visual effect graph中需要输入的数据
 </span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> frameNum = <span style="color:#ae81ff">0</span>;<span style="color:#75715e">//计算处理了多少帧，根据帧数设置粒子的大小
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// Start is called before the first frame update
 </span><span style="color:#75715e"></span>    <span style="color:#66d9ef">void</span> Start()
@@ -152,15 +152,15 @@
             newVFX.SetFloat(Shader.PropertyToID(<span style="color:#e6db74">&#34;SizeNum&#34;</span>), SizeNum);
         }
         frameNum++;
-        <span style="color:#66d9ef">if</span> (frameNum % <span style="color:#ae81ff">500</span> == <span style="color:#ae81ff">0</span>)<span style="color:#75715e">//帧数每到500帧就增加一次粒子的大小
+        <span style="color:#66d9ef">if</span> (frameNum % <span style="color:#ae81ff">50</span> == <span style="color:#ae81ff">0</span>)<span style="color:#75715e">//帧数每到50帧就增加一次粒子的大小
 </span><span style="color:#75715e"></span>        {
-            SizeNum += <span style="color:#ae81ff">0.5f</span>;
+            SizeNum += <span style="color:#ae81ff">0.05f</span>;
             newVFX.SetFloat(Shader.PropertyToID(<span style="color:#e6db74">&#34;SizeNum&#34;</span>), SizeNum);
         }
     }
 }
 
-</code></pre></div><p><img src="https://i.loli.net/2021/01/11/6Zc81VOjUwkiXD3.gif" alt="粒子图2.gif"></p>
+</code></pre></div><p><img src="https://i.loli.net/2021/01/11/EHaZpJegO8Mcmo4.gif" alt="粒子图2.gif"></p>
 
                         </div>
 

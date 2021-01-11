@@ -30,7 +30,7 @@
 在左侧的框中点击加号，并创建一个int型变量RateNum和一个float型变量SizeNum，双击出现的变量可以改名字，同时要注意点击变量左边的向下的箭头，点击Exposed选项。设置好的如下图所示：
 点击变量，并将其拉到框图附近，将RateNum与第一个框图中的Rate相连，将SizeNum与最后一个框图的size相连。
 创建一个scrpt程序，将该脚本程序拖动到visual effect物体(如果你没有改名字)上
-//通过这个程序可以看到粒子大小随时间变化 using System.Collections; using System.Collections.Generic; using UnityEngine; using UnityEngine.VFX; public class myscrpit : MonoBehaviour { VisualEffect newVFX;//创建一个visual effect graph  private int RateNum = 5;//visual effect graph中需要出入的数据  private float SizeNum = 20;//visual effect graph中需要出入的数据  int frameNum = 0;//计算处理了多少帧，根据帧数设置粒子的大小  // Start is called before the first frame update  void Start() { newVFX = GetComponent&amp;lt;VisualEffect&amp;gt;(); //在visual effect graph中绑定两个参数，引号内的参数名要与visual effect graph中相同  newVFX.</description>
+//通过这个程序可以看到粒子大小随时间变化 using System.Collections; using System.Collections.Generic; using UnityEngine; using UnityEngine.VFX; public class myscrpit : MonoBehaviour { VisualEffect newVFX;//创建一个visual effect graph  private int RateNum = 2;//visual effect graph中需要输入的数据  private float SizeNum = 20;//visual effect graph中需要输入的数据  int frameNum = 0;//计算处理了多少帧，根据帧数设置粒子的大小  // Start is called before the first frame update  void Start() { newVFX = GetComponent&amp;lt;VisualEffect&amp;gt;(); //在visual effect graph中绑定两个参数，引号内的参数名要与visual effect graph中相同  newVFX.</description>
     </item>
     
     <item>
