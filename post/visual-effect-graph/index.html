@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-hans">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.79.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>visual effect graph例子 - </title>
+    <meta property="og:title" content="visual effect graph例子 - ">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2021-01-10T14:03:43&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2021-01-10T14:03:43&#43;08:00">
+        
+    <meta name="description" content="visual effect graph例子
+">
+        
+    <meta name="author" content="">
+    <meta property="og:url" content="https://lxli1996.github.io/post/visual-effect-graph/">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    </head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://lxli1996.github.io">
+                        
+                    </a>
+                
+                
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://lxli1996.github.io">首页</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">visual effect graph例子</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2021年1月10日
+                            14:03
+                        </date>
+                        
+                        <div class="post-meta meta-category">
+                            ，归类于
+                            
+                                <a href="/categories/unity">unity</a>
+                            
+                        </div>
+                        <aside id="toc" class="dismissed">
+                            <span class="toc-title">目录 <a href="#" class="toc-dismiss"></a></span>
+                            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#visual-effect-graph">visual effect graph</a>
+      <ul>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#例子">例子</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+                        </aside><div class="post-content">
+                            <h2 id="visual-effect-graph">visual effect graph</h2>
+<h3 id="安装">安装</h3>
+<p>打开unity，点击windows，在下拉菜单中选择Package Manager，安装visual Effect Graph。</p>
+<p><img src="https://i.loli.net/2021/01/11/LZahUCYzHnSo32k.png" alt="packageManager.PNG"></p>
+<p>接下来在同一页面安装High Definition RP</p>
+<p><img src="https://i.loli.net/2021/01/11/6TcRAmgL7XW94Jt.png" alt="HighDefinition Rp.PNG"></p>
+<p>安装完成后，可能会报一些错误，点击Fix All修复错误，修复过程中，会出现两个对话框，选Create One即可</p>
+<p><img src="https://i.loli.net/2021/01/11/otrdKB6WEQvPqzA.png" alt="fix.PNG"></p>
+<h3 id="例子">例子</h3>
+<p>在当前场景下，创建一个visual effect</p>
+<p><img src="https://i.loli.net/2021/01/11/7lyhHRYz3fmO6w1.png" alt="创建visual effect.png"></p>
+<p>在assets中，点击右键创建visual effect graph。</p>
+<p><img src="https://i.loli.net/2021/01/11/2UvoRWhpC8rlJLG.png" alt="visual effect graph.png"></p>
+<p>打开创建的visual effect graph，可以看到一些框图，通过这些框图可以实现一些粒子效果</p>
+<p><img src="https://i.loli.net/2021/01/11/TS9LVX2NvHdqQYn.png" alt="vfx框图.PNG"></p>
+<p>点击visual Effect，在右面Inspector界面中，添加新建的visual effect graph</p>
+<p><img src="https://i.loli.net/2021/01/11/oajMNxpPqZKDL8d.png" alt="添加vfx.PNG"></p>
+<p>现在在场景中，可以看到出现很多粒子</p>
+<p><img src="https://i.loli.net/2021/01/11/moy2X4D85ceVlWp.gif" alt="粒子图1.gif"></p>
+<p>下面，我们来更改visual effect graph中的一些参数</p>
+<p>第一个框图中，Rate表示发出的粒子数，将其变大，可以很明显的看到粒子数变多。</p>
+<p>第二个框图中capacity表示可以容纳的最大粒子数，可以将其调大一点。Set Lifetime Random表示粒子的生命周期，即粒子会存在多长时间。</p>
+<p>最后一个框图设置了粒子的种类，点击update particle框图与output particle quad框图中间的连线，按delete删除。在界面上右键选择CreateNode，点击Context，然后可以选择不同的粒子形状，选择Output particle Lit Sphere，连接它与update particle之间的连线，在output particle  Lit Sphere框图中按下空格键，输入set size，并点击第一个，通过这个选项可以设置粒子大小。</p>
+<p>返回unity界面，以及可以看到效果。</p>
+<p>接下来，使用C#脚本控制一些参数。回到创建visual effect graph文件。</p>
+<p>在左侧的框中点击加号，并创建一个int型变量RateNum和一个float型变量SizeNum，双击出现的变量可以改名字，同时要注意点击变量左边的向下的箭头，点击Exposed选项。设置好的如下图所示：</p>
+<p><img src="https://i.loli.net/2021/01/11/yoN3EA5OZYIm8QM.png" alt="vfx中的变量.PNG"></p>
+<p>点击变量，并将其拉到框图附近，将RateNum与第一个框图中的Rate相连，将SizeNum与最后一个框图的size相连。</p>
+<p>创建一个scrpt程序，将该脚本程序拖动到visual effect物体(如果你没有改名字)上</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#75715e">//通过这个程序可以看到粒子大小随时间变化
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> System.Collections;
+<span style="color:#66d9ef">using</span> System.Collections.Generic;
+<span style="color:#66d9ef">using</span> UnityEngine;
+<span style="color:#66d9ef">using</span> UnityEngine.VFX;
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">myscrpit</span> : MonoBehaviour
+{
+    VisualEffect newVFX;<span style="color:#75715e">//创建一个visual effect graph
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> RateNum = <span style="color:#ae81ff">5</span>;<span style="color:#75715e">//visual effect graph中需要出入的数据
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">float</span> SizeNum = <span style="color:#ae81ff">20</span>;<span style="color:#75715e">//visual effect graph中需要出入的数据
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> frameNum = <span style="color:#ae81ff">0</span>;<span style="color:#75715e">//计算处理了多少帧，根据帧数设置粒子的大小
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Start is called before the first frame update
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">void</span> Start()
+    {
+        newVFX = GetComponent&lt;VisualEffect&gt;();
+        
+        <span style="color:#75715e">//在visual effect graph中绑定两个参数，引号内的参数名要与visual effect graph中相同
+</span><span style="color:#75715e"></span>        newVFX.SetInt(Shader.PropertyToID(<span style="color:#e6db74">&#34;RateNum&#34;</span>), RateNum);
+        newVFX.SetFloat(Shader.PropertyToID(<span style="color:#e6db74">&#34;SizeNum&#34;</span>), SizeNum);
+    }
+
+    <span style="color:#75715e">// Update is called once per frame
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">void</span> Update()
+    {
+        <span style="color:#66d9ef">if</span> (frameNum == <span style="color:#ae81ff">10000</span>)
+        {
+            SizeNum = <span style="color:#ae81ff">0.1f</span>;
+            frameNum = <span style="color:#ae81ff">0</span>;
+        }
+        <span style="color:#66d9ef">if</span> (frameNum == <span style="color:#ae81ff">0</span>)
+        {
+            SizeNum = <span style="color:#ae81ff">0.1f</span>;
+            newVFX.SetFloat(Shader.PropertyToID(<span style="color:#e6db74">&#34;SizeNum&#34;</span>), SizeNum);
+        }
+        frameNum++;
+        <span style="color:#66d9ef">if</span> (frameNum % <span style="color:#ae81ff">500</span> == <span style="color:#ae81ff">0</span>)<span style="color:#75715e">//帧数每到500帧就增加一次粒子的大小
+</span><span style="color:#75715e"></span>        {
+            SizeNum += <span style="color:#ae81ff">0.5f</span>;
+            newVFX.SetFloat(Shader.PropertyToID(<span style="color:#e6db74">&#34;SizeNum&#34;</span>), SizeNum);
+        }
+    }
+}
+
+</code></pre></div><p><img src="https://i.loli.net/2021/01/11/6Zc81VOjUwkiXD3.gif" alt="粒子图2.gif"></p>
+
+                        </div>
+
+                        <div class="post-meta meta-tags">
+                            
+                            没有标签
+                            
+                        </div>
+                    </article>
+                    
+                    <div id="comments"><span class="widget-title"></span></div>
+
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        
+    
+<form id="search" action="https://www.google.com/search" method="get" accept-charset="utf-8" target="_blank">
+    <input type="text" name="q" maxlength="255" placeholder="搜索...">
+    <input type="hidden" name="sitesearch" value="">
+    <button type="submit" class="submit icon-search"></button>
+</form>
+
+
+
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+        <ul class="widget-list">
+            
+            <li>
+                <a href="/categories/c&#43;&#43;">
+                    c&#43;&#43; (4)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/markdown">
+                    markdown (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/unity">
+                    unity (4)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E4%B9%A6%E5%8D%95">
+                    书单 (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">
+                    统计学习方法 (10)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%86%E8%A7%89">
+                    视觉 (6)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">
+                    解决方案 (15)
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+      &copy; 2021 <a rel="nofollow" href="https://lxli1996.github.io"></a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io">Hugo</a> &amp; <a rel="nofollow noreferer noopener" href="https://github.com/JokerQyou/maupassant-hugo">maupassant theme</a>.
+    </div>
+</footer>
+
+<script type="text/javascript" src="/js/app.js" defer></script>
+
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' defer></script>
+
+
+</body>
+</html>

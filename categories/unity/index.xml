@@ -6,7 +6,33 @@
     <description>Recent content in unity on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
-    <lastBuildDate>Fri, 08 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/unity/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 10 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/unity/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>visual effect graph例子</title>
+      <link>https://lxli1996.github.io/post/visual-effect-graph/</link>
+      <pubDate>Sun, 10 Jan 2021 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/visual-effect-graph/</guid>
+      <description>visual effect graph 安装 打开unity，点击windows，在下拉菜单中选择Package Manager，安装visual Effect Graph。
+接下来在同一页面安装High Definition RP
+安装完成后，可能会报一些错误，点击Fix All修复错误，修复过程中，会出现两个对话框，选Create One即可
+例子 在当前场景下，创建一个visual effect
+在assets中，点击右键创建visual effect graph。
+打开创建的visual effect graph，可以看到一些框图，通过这些框图可以实现一些粒子效果
+点击visual Effect，在右面Inspector界面中，添加新建的visual effect graph
+现在在场景中，可以看到出现很多粒子
+下面，我们来更改visual effect graph中的一些参数
+第一个框图中，Rate表示发出的粒子数，将其变大，可以很明显的看到粒子数变多。
+第二个框图中capacity表示可以容纳的最大粒子数，可以将其调大一点。Set Lifetime Random表示粒子的生命周期，即粒子会存在多长时间。
+最后一个框图设置了粒子的种类，点击update particle框图与output particle quad框图中间的连线，按delete删除。在界面上右键选择CreateNode，点击Context，然后可以选择不同的粒子形状，选择Output particle Lit Sphere，连接它与update particle之间的连线，在output particle Lit Sphere框图中按下空格键，输入set size，并点击第一个，通过这个选项可以设置粒子大小。
+返回unity界面，以及可以看到效果。
+接下来，使用C#脚本控制一些参数。回到创建visual effect graph文件。
+在左侧的框中点击加号，并创建一个int型变量RateNum和一个float型变量SizeNum，双击出现的变量可以改名字，同时要注意点击变量左边的向下的箭头，点击Exposed选项。设置好的如下图所示：
+点击变量，并将其拉到框图附近，将RateNum与第一个框图中的Rate相连，将SizeNum与最后一个框图的size相连。
+创建一个scrpt程序，将该脚本程序拖动到visual effect物体(如果你没有改名字)上
+//通过这个程序可以看到粒子大小随时间变化 using System.Collections; using System.Collections.Generic; using UnityEngine; using UnityEngine.VFX; public class myscrpit : MonoBehaviour { VisualEffect newVFX;//创建一个visual effect graph  private int RateNum = 5;//visual effect graph中需要出入的数据  private float SizeNum = 20;//visual effect graph中需要出入的数据  int frameNum = 0;//计算处理了多少帧，根据帧数设置粒子的大小  // Start is called before the first frame update  void Start() { newVFX = GetComponent&amp;lt;VisualEffect&amp;gt;(); //在visual effect graph中绑定两个参数，引号内的参数名要与visual effect graph中相同  newVFX.</description>
+    </item>
+    
     <item>
       <title>computeShader程序例子</title>
       <link>https://lxli1996.github.io/post/computeshader/</link>
