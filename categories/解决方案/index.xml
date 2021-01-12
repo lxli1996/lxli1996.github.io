@@ -6,7 +6,17 @@
     <description>Recent content in 解决方案 on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
-    <lastBuildDate>Tue, 05 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 12 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>鼠标换微动</title>
+      <link>https://lxli1996.github.io/post/%E9%BC%A0%E6%A0%87%E6%8D%A2%E5%BE%AE%E5%8A%A8/</link>
+      <pubDate>Tue, 12 Jan 2021 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/%E9%BC%A0%E6%A0%87%E6%8D%A2%E5%BE%AE%E5%8A%A8/</guid>
+      <description>最近在使用实验室的一个旧鼠标，握感很好，整体上还可以，但是点击的声音稍稍有一点大，于是在淘宝买两个欧姆龙的静音微动换上去了
+换微动的过程比我想象的顺利，原鼠标的三个引脚只有两个用到，第三个实际上没有连接。因此直接将两个引脚的静音微动直接换上，并焊接即可</description>
+    </item>
+    
     <item>
       <title>git使用</title>
       <link>https://lxli1996.github.io/post/git%E4%BD%BF%E7%94%A8/</link>
