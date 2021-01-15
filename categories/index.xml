@@ -6,7 +6,16 @@
     <description>Recent content in Categories on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
-    <lastBuildDate>Tue, 12 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 15 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C&#43;&#43;</title>
+      <link>https://lxli1996.github.io/categories/c&#43;&#43;/</link>
+      <pubDate>Fri, 15 Jan 2021 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/categories/c&#43;&#43;/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>解决方案</title>
       <link>https://lxli1996.github.io/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</link>
@@ -22,15 +31,6 @@
       <pubDate>Sun, 10 Jan 2021 14:03:43 +0800</pubDate>
       
       <guid>https://lxli1996.github.io/categories/unity/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>C&#43;&#43;</title>
-      <link>https://lxli1996.github.io/categories/c&#43;&#43;/</link>
-      <pubDate>Fri, 08 Jan 2021 14:03:43 +0800</pubDate>
-      
-      <guid>https://lxli1996.github.io/categories/c&#43;&#43;/</guid>
       <description></description>
     </item>
     

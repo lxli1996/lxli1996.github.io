@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="zh-hans">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.79.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>effective C&#43;&#43; 2 - </title>
+    <meta property="og:title" content="effective C&#43;&#43; 2 - ">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2021-01-15T14:03:43&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2021-01-15T14:03:43&#43;08:00">
+        
+    <meta name="description" content="effective C&#43;&#43;
+">
+        
+    <meta name="author" content="">
+    <meta property="og:url" content="https://lxli1996.github.io/post/effective-c&#43;&#43;1/">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    </head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://lxli1996.github.io">
+                        
+                    </a>
+                
+                
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://lxli1996.github.io">首页</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">effective C&#43;&#43; 2</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2021年1月15日
+                            14:03
+                        </date>
+                        
+                        <div class="post-meta meta-category">
+                            ，归类于
+                            
+                                <a href="/categories/c&#43;&#43;">C&#43;&#43;</a>
+                            
+                        </div>
+                        <aside id="toc" class="dismissed">
+                            <span class="toc-title">目录 <a href="#" class="toc-dismiss"></a></span>
+                            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#构造析构赋值运算">构造、析构、赋值运算</a>
+      <ul>
+        <li><a href="#条款5了解c默默编写并调用那些函数">条款5:了解C++默默编写并调用那些函数</a></li>
+        <li><a href="#条款6若不想使用编译器自动生成的函数就该明确拒绝">条款6:若不想使用编译器自动生成的函数，就该明确拒绝</a></li>
+        <li><a href="#条款7为多态基类声明virtual析构函数">条款7:为多态基类声明virtual析构函数</a></li>
+        <li><a href="#条款8别让异常逃离析构函数">条款8:别让异常逃离析构函数</a></li>
+        <li><a href="#条款9绝不在构造和析构过程中调用virtual函数">条款9:绝不在构造和析构过程中调用virtual函数</a></li>
+        <li><a href="#条款10令operator返回一个reference-to-this">条款10:令operator=返回一个reference to *this</a></li>
+        <li><a href="#条款11在operator中处理自我赋值">条款11:在operator=中处理自我赋值</a></li>
+        <li><a href="#条款12复制对象时要复制每个成分">条款12:复制对象时要复制每个成分</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+                        </aside><div class="post-content">
+                            <p>本文的相关术语使用&laquo;effective C++&raquo;中的表示方法。</p>
+<h2 id="构造析构赋值运算">构造、析构、赋值运算</h2>
+<h3 id="条款5了解c默默编写并调用那些函数">条款5:了解C++默默编写并调用那些函数</h3>
+<p>当C++处理一个空类后，就不在是一个空类了，编译器会根据后面的程序操作，自动生成一个copy构造函数，一个copy assignment操作符合一个析构函数。如果你没有声明任何构造函数编译器也会为你声明一个default构造函数，所有这些函数都是public且inline的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">//当你写下：
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Empty</span>{};
+<span style="color:#75715e">//当代码执行了一些操作时
+</span><span style="color:#75715e"></span>Empty e1;<span style="color:#75715e">//产生default构造函数
+</span><span style="color:#75715e"></span>		<span style="color:#75715e">//产生析构函数
+</span><span style="color:#75715e"></span>Empty <span style="color:#a6e22e">e2</span>(e1);<span style="color:#75715e">//产生copy构造函数
+</span><span style="color:#75715e"></span>e2<span style="color:#f92672">=</span>e1;<span style="color:#75715e">//产生copy assignment操作符
+</span><span style="color:#75715e">//编译器会自动生成如下代码：
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Empty</span>{
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    Empty(){...}<span style="color:#75715e">//默认构造函数
+</span><span style="color:#75715e"></span>    Empty(<span style="color:#66d9ef">const</span> Empty<span style="color:#f92672">&amp;</span> rhs){...}<span style="color:#75715e">//copy构造函数
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">~</span>Empty(){...}<span style="color:#75715e">//析构函数，编译器产出的析构函数是个non-virtual，除非这个类的基类自身声明有virtual析构函数(这种情况下这个函数的虚属性，主要来自基类)
+</span><span style="color:#75715e"></span>    Empty<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Empty<span style="color:#f92672">&amp;</span> rhs){...}<span style="color:#75715e">//copy assignment操作符
+</span><span style="color:#75715e"></span>};
+</code></pre></div><p><strong>请记住：</strong></p>
+<ul>
+<li>编译器可以暗自为class创建default构造函数，copy构造函数，copy assignment操作符，以及析构函数。</li>
+</ul>
+<h3 id="条款6若不想使用编译器自动生成的函数就该明确拒绝">条款6:若不想使用编译器自动生成的函数，就该明确拒绝</h3>
+<p>一般来讲，如果你不希望class支持某一机能，只要不声明对应函数即可。但是这个策略对copy构造函数和copy assignment操作符不起作用，因为你不声明他们，而某些人尝试调用他们，编译器也会为你声明它们。</p>
+<p>对于这个问题，所有编译器产出的函数都是public，为阻止这些函数被创建出来，你得自行声明它们，因此你可以将copy构造函数或copy assignment操作符声明为private。借此声明一个成员函数，阻止编译器暗自创建其专属版本，并令这些函数为private，使得没有人可以调用它。</p>
+<p>一般而言，这种方法并不安全，因为member函数(成员函数)和friend函数(友元函数)还是可以调用你的private函数。除非你足够聪明，不在成员函数和友元函数中调用，那么如果某些人不慎调用任何一个，都会得到一个连接错误(linkage error)。</p>
+<p>对于上面可能发生的问题，将连接期错误移至编译期是可能的(而且是好事，因为可以尽早检测出问题)，只要，创建一个专门为阻止copy动作而设计的基类，并在其中将copy构造函数和copy assignment操作符声明为private即可。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Uncopyable</span>{
+  <span style="color:#66d9ef">protected</span><span style="color:#f92672">:</span>
+    Uncopyable(){}
+    <span style="color:#f92672">~</span>Uncopyable(){}
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    Uncopyable(<span style="color:#66d9ef">const</span> Uncopyable<span style="color:#f92672">&amp;</span>);<span style="color:#75715e">//阻止copy
+</span><span style="color:#75715e"></span>    Uncopyable<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Uncopyable<span style="color:#f92672">&amp;</span>);
+};
+<span style="color:#75715e">//为阻止HomeForSale对象被拷贝，我们需要继承Uncopyable
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HomeForSale</span><span style="color:#f92672">:</span><span style="color:#66d9ef">private</span> Uncopyable{  
+};
+<span style="color:#75715e">//当任何人，即使是成员函数或友元函数尝试拷贝HomeForSale对象，编译器会试着生成一个copy构造函数和一个copy assignment操作符，这些函数的编译器生成版会尝试调用基类的函数，但是会被拒绝然后报错，因为基类中的copy函数是private。
+</span></code></pre></div><p>C++11中的解决方法</p>
+<p>C++11中引入了一个新特性使得我们可以显式的将我们不需要的函数标记为delete。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HomeForSale</span>{
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    HomeForSale(){}
+    HomeForSale(<span style="color:#66d9ef">const</span> HomeForSale<span style="color:#f92672">&amp;</span>)<span style="color:#f92672">=</span><span style="color:#66d9ef">delete</span>;
+    HomeForSale<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> HomeForSale<span style="color:#f92672">&amp;</span>)<span style="color:#f92672">=</span><span style="color:#66d9ef">delete</span>;
+};
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">copyFunc</span>(){
+    <span style="color:#75715e">//当有人调用copy函数时，编译会失败
+</span><span style="color:#75715e"></span>    HomeForSale hfs1;
+    HomeForSale hfs2<span style="color:#f92672">=</span>hfs1;<span style="color:#75715e">//编译失败
+</span><span style="color:#75715e"></span>    HomeForSale hfs3(hfs2);<span style="color:#75715e">//编译失败
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p><strong>请记住：</strong></p>
+<ul>
+<li>为驳回编译器自动提供的机能，可将相应成员函数声明为private并且不予实现。使用像Uncopyable这样的base class也是一种方法。</li>
+</ul>
+<h3 id="条款7为多态基类声明virtual析构函数">条款7:为多态基类声明virtual析构函数</h3>
+<p>首先考虑一个场景，设计一个类TimeKeeper来记录时间。由于记录时间方法有很多，我们可以以TimeKeeper为基类设计出一些派生类作为不同的实现方法(即多态)。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TimeKeeper</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    TimeKeeper();
+    <span style="color:#f92672">~</span>TimeKeeper();
+};
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AtomicClock</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> TimeKeeper {};
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WaterClock</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> TimeKeeper {};
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WristWatch</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> TimeKeeper {};
+</code></pre></div><p>我们使用工厂函数返回一个基类(TimeKeeper)指针指向派生类对象，</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">TimeKeeper<span style="color:#f92672">*</span> <span style="color:#a6e22e">getTimeKeeper</span>() {
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> WaterClock(); <span style="color:#75715e">//可设置返回不同派生类的指针
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>同时要注意到getTimeKeeper()中返回的对象位于堆中，因此用户在进程结束前需要将其delete。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">TimeKeeper<span style="color:#f92672">*</span> ptk<span style="color:#f92672">=</span>getTimeKeeper();
+<span style="color:#66d9ef">delete</span> ptk;
+</code></pre></div><p>希望用户去手动delete对象是有问题的，这一部分后续内容会提到。但问题不止于此。</p>
+<p>当我们delete一个指向派生类的基类指针时，在这种情况下(所有析构函数都是non-virtual)只有基类的析构函数被调用了，这种结构会导致有一部分空间(派生类的额外成员变量)没有释放干净而导致内存泄漏。</p>
+<p>首先了解一下构造和析构的顺序：</p>
+<ul>
+<li>当析构函数不是虚函数时：父指针子对象时：构造是父—&gt;子，析构是父</li>
+<li>当析构函数不是虚函数时：子指针子对象时：构造是父—&gt;子，析构是子—&gt;父</li>
+<li>当析构函数是虚函数时：父指针子对象时：构造是父—&gt;子，析构是子—&gt;父</li>
+</ul>
+<p>解决这个问题的方法很简单，给基类对象一个virtual析构函数，此后删除子类对象就会删除整个对象，包括子类成分。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TimeKeeper</span>{
+    <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    TimeKeeper();
+    <span style="color:#66d9ef">virtual</span> <span style="color:#f92672">~</span>TimeKeeper();
+};
+TimeKeeper<span style="color:#f92672">*</span> ptk<span style="color:#f92672">=</span>getTimeKeeper();
+<span style="color:#66d9ef">delete</span> ptk;
+</code></pre></div><p>如果class不含有virtual函数，通常表示他不想作为一个base class。当class不企图做base class，令其析构函数为virtual是不好的。</p>
+<p>鉴于上面所述的问题，有人想将所有类的析构函数都声明为virtual，但这样同样是不好的。每一个带有virtual函数的对象都会存有一份虚函数表指针(virtual table pointer，vtpr)指向所有由函数指针组成的数组，即虚函数表(virtual table，vtbl)。当对象调用某一个虚函数时，程序会通过虚函数表中查找对应函数来调用。由此可知，声明析构函数为虚函数会带来额外的内存开销。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Point</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    Point(<span style="color:#66d9ef">int</span> xCoord, <span style="color:#66d9ef">int</span> yCoord)<span style="color:#f92672">:</span> x(xCoord), y(yCoord) {}
+    <span style="color:#f92672">~</span>Point() {};
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">int</span> x, y;
+};
+std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Size of Point: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#66d9ef">sizeof</span>(Point) <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl; 
+<span style="color:#75715e">// output: Size of Point: 8
+</span></code></pre></div><p>上述Point类的大小为8字节，因为类中包含两个int型变量，各占4字节。这样一个Point对象可以存入一个64位缓存器，甚至作为一个64位量直接提供给其他语言C或FORTRAN使用，具有良好的移植性。</p>
+<p>当我们将其析构函数声明为virtual时：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PointWithVitural</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    PointWithVitural(<span style="color:#66d9ef">int</span> xCoord, <span style="color:#66d9ef">int</span> yCoord)<span style="color:#f92672">:</span> x(xCoord), y(yCoord) {}
+    <span style="color:#66d9ef">virtual</span> <span style="color:#f92672">~</span>PointWithVitural() {};
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">int</span> x, y;
+};
+std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Size of PointWithVirtual: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#66d9ef">sizeof</span>(PointWithVitural) <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl; <span style="color:#75715e">// output: Size of PointWithVirtual: 16
+</span></code></pre></div><p>该变量的内存占用变为16字节，占用多了一倍，不能再放入64位缓存器，并且该类不再与C或其他语言相同声明的类中拥有相同的结构(因为C中不存在vtpr)，因而失去移植性。(我们必须手动添加偏置以补偿vptr)。</p>
+<p>因此，我们通常认为<strong>只有当类中至少包含一个除析构函数外的virtual函数时才将析构函数声明为virtual</strong>。</p>
+<p><strong>pure virtual 函数导致抽象类，也就是不能被实体化的类</strong>。</p>
+<p>有时候你希望拥有抽象class，但手上没有任何pure virtual 函数，怎么办？由于抽象class总是企图被当作一个base class来用，而又由于基类应该有个virtual 析构函数，并且由于pure virtual函数会导致抽象类，因此解法很简单，为你希望成为抽象类声明一个pure virtual析构函数。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AWOV</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">virtual</span> <span style="color:#f92672">~</span>AWOV() <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+};
+</code></pre></div><p>此外，你还需要为这个pure virtual 析构函数提供一份定义：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">//一般而言纯虚函数的函数体是缺省的，但是也可以给出纯虚函数的函数体（此时纯虚函数仍然为纯虚函数，
+</span><span style="color:#75715e">//对应的类仍然为抽象类，还是不能实例化对象）
+</span><span style="color:#75715e">//因为其为抽象类，不能产生自己的对象，而且子类中一定会重写纯虚函数(不重写会报错)，因此该类的虚表内函数一定会被替换掉，
+</span><span style="color:#75715e"></span>AWOV<span style="color:#f92672">::~</span>AWOV(){}
+</code></pre></div><p>析构函数的运作方式是，最深层派生的那个类，其析构函数最先被调用，然后是其每一个基类的析构函数被调用。编译器会在AWOV的子类的析构函数中创建一个对~AWOV的调用动作，所有你必须为这个函数提供一份定义。如果不这样做，连接器会报错。</p>
+<p>我们应该注意到，给基类一个virtual析构函数，这个规则只试用于带多态的基类身上，这种基类的设计目的是为了用来通过基类接口处理子类对象。</p>
+<p><strong>请记住：</strong></p>
+<ul>
+<li>多态的基类应该声明一个虚析构函数，如果类带有任何虚函数，它就应该拥有一个虚析构函数。</li>
+<li>类的设计目的如果不是作为基类使用，或不是为了具有多态性，就不应该声明为虚析构函数。</li>
+</ul>
+<h3 id="条款8别让异常逃离析构函数">条款8:别让异常逃离析构函数</h3>
+<p>C++不禁止析构函数吐出异常，但是并不鼓励这样，考虑如下程序：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Widge</span>{
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#f92672">~</span>Widget(){}<span style="color:#75715e">//假设在这里发生异常
+</span><span style="color:#75715e"></span>};
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">doSomething</span>(){
+    std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span> v;
+    <span style="color:#75715e">//v在这被销毁
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>当vector v被销毁，它有责任销毁其内含的所有Widgets。假设v含有十个Widgets，而在析构第一个元素期间，有个异常被抛出。其他9个Widgets还是应该被销毁的，否则会内存泄漏。这是如果第二个Widget再抛出异常，程序大概率会结束执行或导致不明确行为。</p>
+<p>这很容易理解，但是如果你的析构函数必须执行一个动作，而该动作可能在失败时抛出异常，该怎么办？假设你使用了一个class负责数据库连接</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DBConnection</span>{
+  <span style="color:#66d9ef">static</span> DBConnection <span style="color:#a6e22e">create</span>();<span style="color:#75715e">//这个函数返回DBConnection对象
+</span><span style="color:#75715e"></span>  ...
+  <span style="color:#66d9ef">void</span> close();<span style="color:#75715e">//关闭联机，失败则抛出异常
+</span><span style="color:#75715e"></span>};
+</code></pre></div><p>为了确保客户不忘记在DBConnection对象身上调用close()，一个合理的想法是创建一个用来管理DBConnection资源的class，并在其析构函数中调用close。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DBConn</span>{<span style="color:#75715e">//使用这个类来管理DBConnection对象
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#f92672">~</span>DBConn(){<span style="color:#75715e">//确保数据库连接总是会被关闭
+</span><span style="color:#75715e"></span>        db.close();
+    }
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    DBConnection db;
+};
+</code></pre></div><p>只要调用close成功，一切都很好，但是如果该调用导致异常，DBConn析构函数会传播该异常，也就是允许他离开这个析构函数。这就会造成问题。</p>
+<p>有两个办法可以避免这一问题：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">//如果close抛出异常就结束程序，通常通过调用abort完成：
+</span><span style="color:#75715e"></span>DBConn<span style="color:#f92672">::~</span>DBConn(){
+    <span style="color:#66d9ef">try</span>{db.close();}
+    <span style="color:#66d9ef">catch</span>(...){
+        <span style="color:#75715e">//制作运转记录，记下对close的调用失败
+</span><span style="color:#75715e"></span>        std<span style="color:#f92672">::</span>abort();
+    }
+}
+<span style="color:#75715e">//如果程序遇到一个于析构期间发生的错误后无法继续执行，强迫结束程序是合理的。它可以阻止异常从析构函数传播出去，进而导致不明确行为。
+</span></code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">//吞下因调用close而发生的异常
+</span><span style="color:#75715e"></span>DBConn<span style="color:#f92672">::~</span>DBConn(){
+    <span style="color:#66d9ef">try</span>{db.close();}
+    <span style="color:#66d9ef">catch</span>(...){
+        <span style="color:#75715e">//制作运转记录，记下对close的调用失败
+</span><span style="color:#75715e"></span>    }
+}
+<span style="color:#75715e">//一般而言，将异常吞掉是坏主意，因为它压制了某些动作失败的重要信息。
+</span></code></pre></div><p>这些方法都没有什么吸引力，问题在于两者都无法对导致close抛出异常的情况作出反应。</p>
+<p>一个较佳的策略是重新设计DBConn接口，使客户有机会对可能发生的问题作出反应。例如DBConn自己可以提供一个close函数。或者DBConn也可以追踪其所管理的DBConnection是否已被关闭，如果为否则由析构函数关闭它。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DBConn</span>{
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> close(){
+        db.close();
+        closed<span style="color:#f92672">=</span>true;
+    }
+    <span style="color:#f92672">~</span>DBCon(){
+        <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>closed){
+            <span style="color:#66d9ef">try</span>{
+                db.close();
+            }
+            <span style="color:#66d9ef">catch</span>(...){
+                <span style="color:#75715e">//制作运转记录，记下对close的调用失败
+</span><span style="color:#75715e"></span>            }
+        }
+    }
+    <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    DBConnection db;
+    <span style="color:#66d9ef">bool</span> closed;
+};
+</code></pre></div><p><strong>请记住：</strong></p>
+<ul>
+<li>析构函数绝对不要吐出异常，如果一个被析构函数调用的函数可能抛出异常，析构函数应该捕捉任何异常，然后吞下他们(不传播)或结束程序</li>
+<li>如果客户需要对某个操作函数运行期间抛出的异常作出反应，那么class应该提供一个普通函数(而非在析构函数中)执行该操作。</li>
+</ul>
+<h3 id="条款9绝不在构造和析构过程中调用virtual函数">条款9:绝不在构造和析构过程中调用virtual函数</h3>
+<p>假如你有一个class继承体系，用来建模股市交易，创建一个用于交易的基类</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Transaction</span>{<span style="color:#75715e">//所有交易的基类
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    Transaction();
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">logTransaction</span>()<span style="color:#66d9ef">const</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;<span style="color:#75715e">//实现一个因类型不同而不同的日志记录
+</span><span style="color:#75715e"></span>    ...
+};
+Transaction<span style="color:#f92672">::</span>Transaction(){<span style="color:#75715e">//基类构造函数的实现
+</span><span style="color:#75715e"></span>    ...
+    logTransaction();<span style="color:#75715e">//最后的动作是记录这笔交易
+</span><span style="color:#75715e"></span>}
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BuyTransaction</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Transaction{<span style="color:#75715e">//子类
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> logTransaction() <span style="color:#66d9ef">const</span>;<span style="color:#75715e">//记录这笔交易
+</span><span style="color:#75715e"></span>};
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SellTransaction</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Transaction{<span style="color:#75715e">//子类
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> logTransaction() <span style="color:#66d9ef">const</span>;<span style="color:#75715e">//记录这笔交易
+</span><span style="color:#75715e"></span>};
+<span style="color:#75715e">//现在执行如下操作：
+</span><span style="color:#75715e"></span>BuyTransaction b;
+</code></pre></div><p>在BuyTransaction构造函数被调用之前，首先调用Transaction的构造函数。Transaction构造函数的最后一行调用virtual函数logTransaction，这引发问题。这时候调用的logTransaction是Transaction内的版本，不是BuyTransaction内的版本。基类构造期间virtual函数绝对不会下降到子类阶层。因此，比较形象的说法是，在基类构造期间，virtual函数不是virtual函数</p>
+<p>由于基类构造函数要更早的执行于子类构造函数，当基类的构造函数执行时，子类的成员变量尚未初始化。如果此时调用virtual函数下降到子类阶层，这将导致不明确行为的问题。</p>
+<p>在子类对象的基类构造期间，对象的类型是基类而不是子类，不止virtual函数会被编译器解析至基类，若使用运行期类型信息(如dynamic_cast和typeid)，也会把对象视为基类类型。</p>
+<p>同理也适用于析构函数。一旦子类析构函数开始执行，对象内的子类成员变量便呈现未定义值，因此进入基类的析构函数后对象就成为一个基类对象，同样dynamic_casts等也这么看待它。</p>
+<p>我们有什么方法可以即实现我们想要的效果(对不同的Transaction子类对象的构造过程，进行独有的LogTransaction()调用)并且不会出现上述问题？一个简单的方法是将LogTransaction()改为non-virtual并要求子类中的构造函数传递必要消息进而传递logTransaction()来调用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Transaction</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">explicit</span> Transaction(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>string<span style="color:#f92672">&amp;</span> logInfo);
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">logTransaction</span>(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>string<span style="color:#f92672">&amp;</span> logInfo) <span style="color:#66d9ef">const</span>;
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BuyTransaction</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Transaction {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    BuyTransaction() <span style="color:#f92672">:</span> Transaction(createLogString()) {}
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>string createLogString();
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SellTransaction</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Transaction {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    SellTransaction() <span style="color:#f92672">:</span> Transaction(createLogString()) {}
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>string createLogString();
+};
+
+Transaction<span style="color:#f92672">::</span>Transaction(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>string<span style="color:#f92672">&amp;</span> logInfo) {
+    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> logInfo <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+}
+
+std<span style="color:#f92672">::</span>string BuyTransaction<span style="color:#f92672">::</span>createLogString() {
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;Logged a buy transaction&#34;</span>;
+}
+
+std<span style="color:#f92672">::</span>string SellTransaction<span style="color:#f92672">::</span>createLogString() {
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;Logged a sell transaction&#34;</span>;
+}
+</code></pre></div><p><strong>请记住：</strong></p>
+<ul>
+<li>在构造和析构期间不要调用virtual函数，因为这类调用从不下降至子类(比起当前执行构造函数和析构函数的那层)。</li>
+</ul>
+<h3 id="条款10令operator返回一个reference-to-this">条款10:令operator=返回一个reference to *this</h3>
+<p>关于赋值，有趣的是你可以将他们写为连续赋值形式：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">int</span> x,y,z;
+x<span style="color:#f92672">=</span>y<span style="color:#f92672">=</span>z<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>;<span style="color:#75715e">//连续赋值
+</span><span style="color:#75715e">//上式等于15先赋值给z，然后其结果(更新后的z)在被赋值给y，然后其结果(更新后的y)再被赋值给x
+</span><span style="color:#75715e"></span>x<span style="color:#f92672">=</span>(y<span style="color:#f92672">=</span>(z<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>));
+</code></pre></div><p>为了实现连续赋值，赋值操作必须返回一个reference指向操作符的左侧实参。这是你为class实现赋值操作符时应该遵循的协议：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Widget</span>{
+    <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    Widget<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Widget<span style="color:#f92672">&amp;</span> rhs){<span style="color:#75715e">//返回类型是引用，指向当前对象
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span><span style="color:#f92672">*</span> <span style="color:#66d9ef">this</span>;<span style="color:#75715e">//返回左侧对象，y=z,返回y
+</span><span style="color:#75715e"></span>    }
+};
+<span style="color:#75715e">//这种方法也适用于所有赋值相关运算
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Widget</span>{
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    Widget<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">+=</span>(<span style="color:#66d9ef">const</span> Widget<span style="color:#f92672">&amp;</span> rhs){<span style="color:#75715e">//也适用于+=,-=,*=
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span><span style="color:#f92672">*</span> <span style="color:#66d9ef">this</span>;
+    }
+};
+<span style="color:#75715e">//值得注意的是，这个协议被所有内置类型和标准程序库提供的类型如string,vector,complex,
+</span><span style="color:#75715e">//tr1::shared_ptr或即将提供的类型共同遵守。
+</span></code></pre></div><p><strong>请记住：</strong></p>
+<ul>
+<li>令赋值(assignment)操作符返回一个reference to * this。</li>
+</ul>
+<h3 id="条款11在operator中处理自我赋值">条款11:在operator=中处理自我赋值</h3>
+<p>自我赋值发生在对象被赋值给自己时：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Widget</span>{};
+Widget w;
+w<span style="color:#f92672">=</span>w;<span style="color:#75715e">//赋值给自己，看起来好像很蠢，但不要认定客户不会这么做，此处的赋值可能以一些其他的形式出现
+</span><span style="color:#75715e"></span>a[i]<span style="color:#f92672">=</span>a[j];<span style="color:#75715e">//潜在的自我赋值
+</span><span style="color:#75715e"></span><span style="color:#f92672">*</span>px<span style="color:#f92672">=*</span>py;<span style="color:#75715e">//潜在的自我赋值
+</span></code></pre></div><p>如果你尝试自行管理资源(如你打算写一个用于资源管理的class就得这样做)，可能会掉进在停止使用资源之前意外释放了它的陷阱。假设你建立一个class用来保存一个指针指向一块动态分配的位图</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Bitmap</span>{};
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Widget</span>{
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    Bitmap<span style="color:#f92672">*</span> pb;<span style="color:#75715e">//指针，指向一个从heap分配而得的对象
+</span><span style="color:#75715e"></span>};
+</code></pre></div><p>下面是operator=实现代码，表面上看起来合理，但是自我赋值出现时并不安全(它也不具备异常安全性，稍后讨论这个问题)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Widget<span style="color:#f92672">&amp;</span>
+Widget<span style="color:#f92672">::</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Widget<span style="color:#f92672">&amp;</span> rhs){
+    <span style="color:#66d9ef">delete</span> pb;
+    pb<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Bitmap(<span style="color:#f92672">*</span>rhs.pb);
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+}
+<span style="color:#75715e">//这个程序的问题在于，当*this和rhs是同一个对象时，delete不止销毁当前对象的bitmap也销毁了rhs的bitmap。在函数的结尾，Widget它原本不该被自我赋值动作改变，但是最后发现指针指向一个已被删除的对象。
+</span></code></pre></div><p>一种解决方法是，在前面加一个证同测试</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Widget<span style="color:#f92672">&amp;</span> Widget<span style="color:#f92672">::</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Widget<span style="color:#f92672">&amp;</span> rhs){
+    <span style="color:#66d9ef">if</span>(<span style="color:#66d9ef">this</span><span style="color:#f92672">==&amp;</span>rhs)
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+    <span style="color:#66d9ef">delete</span> pb;
+    pb<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Bitmap(<span style="color:#f92672">*</span>rhs.pb);
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+}
+<span style="color:#75715e">//这样做是可行的，但是不具备异常安全性
+</span><span style="color:#75715e">//如当new Bitmap导致异常，通常是因为分配内存不足导致或Bitmap的copy构造函数抛出异常。
+</span><span style="color:#75715e">//在这种情况下Widget最终会持有一个指针指向一个被删除的Bitmap。
+</span></code></pre></div><p>通常来讲，让operator=具备异常安全性往往自动获得自我赋值安全。因而越来越多人对自我赋值的处理态度是不去管它，把焦点放在实现异常安全性上。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Widget<span style="color:#f92672">&amp;</span> Widget<span style="color:#f92672">::</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Widget<span style="color:#f92672">&amp;</span> rhs){
+    Bitmap<span style="color:#f92672">*</span> pOrig<span style="color:#f92672">=</span>pb;<span style="color:#75715e">//先保存原有的pb
+</span><span style="color:#75715e"></span>    pb<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Bitmap(<span style="color:#f92672">*</span>rhs.pb);<span style="color:#75715e">//令pb指向*pb的一个副本
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">delete</span> pOrig;<span style="color:#75715e">//删除原先的pb
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+}
+</code></pre></div><p>在operator=函数内手工排列语句(确保代码不但异常安全且自我赋值安全)的一个替代方案是，使用copy and swap技术。这个技术和异常安全性有密切关系。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Widget</span>{
+  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">swap</span>(Widget<span style="color:#f92672">&amp;</span> rhs);<span style="color:#75715e">//交换*this和rhs数据  
+</span><span style="color:#75715e"></span>};
+Widget<span style="color:#f92672">&amp;</span> Widget<span style="color:#f92672">::</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Widget<span style="color:#f92672">&amp;</span> rhs){
+    Widget <span style="color:#a6e22e">temp</span>(rhs);<span style="color:#75715e">//为rhs数据制作一份副本
+</span><span style="color:#75715e"></span>    swap(temp);<span style="color:#75715e">//将*this数据和上述复件的数据交换
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+}
+</code></pre></div><p><strong>请记住：</strong></p>
+<ul>
+<li>确保当对象自我赋值时operator=有良好行为。其中技术包括比较来源对象和目标对象的地址，周到的语句顺序和copy and swap。</li>
+<li>确定任何函数如果操作一个以上的对象，而其中多个对象是同一个对象时，其行为仍然正确。</li>
+</ul>
+<h3 id="条款12复制对象时要复制每个成分">条款12:复制对象时要复制每个成分</h3>
+<p>现有一个类用来表现顾客，使用手工写出copy构造函数和copy assignment操作符，我们称他们为copying函数。使得外界对他们的调用会被记录下来。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">logCall</span>(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>string<span style="color:#f92672">&amp;</span> funcName);<span style="color:#75715e">//记录函数
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Customer</span>{
+    <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    Customer(<span style="color:#66d9ef">const</span> Customer<span style="color:#f92672">&amp;</span> rhs);
+    Customer<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Customer<span style="color:#f92672">&amp;</span> rhs);
+    <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    std<span style="color:#f92672">::</span>string name;
+}
+Customer<span style="color:#f92672">::</span>Customer(<span style="color:#66d9ef">const</span> Customer<span style="color:#f92672">&amp;</span> rhs)<span style="color:#f92672">:</span>name(rhs.name){
+    logCall(<span style="color:#e6db74">&#34;Customer copy constructor&#34;</span>);
+}
+Customer<span style="color:#f92672">&amp;</span> Customer<span style="color:#f92672">::</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Customer<span style="color:#f92672">&amp;</span> rhs){
+    logCall(<span style="color:#e6db74">&#34;Customer copy assignment operator&#34;</span>);
+    name<span style="color:#f92672">=</span>rhs.name;
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+}
+<span style="color:#75715e">//到目前为止，一切正常，但是添加一个变量后，就可能出现问题
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Date</span>{};
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Customer</span>{
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    ...
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    std<span style="color:#f92672">::</span>string name;
+    Date lastTransaction;
+};
+</code></pre></div><p>这时候既有的copying函数执行的是局部拷贝，它的确复制了顾客的name，没有复制新添加的lastTransaction。大多数编译器对此不做任何提醒</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">//一旦发生继承，可能会造成一个潜在的危机
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PriorityCustomer</span><span style="color:#f92672">:</span><span style="color:#66d9ef">public</span> Customer{
+    <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    PriorityCustomer(<span style="color:#66d9ef">const</span> PriorityCustomer<span style="color:#f92672">&amp;</span> rhs);
+    PriotityCustomer<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> PriorityCustomer<span style="color:#f92672">&amp;</span> rhs);
+    <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">int</span> priority;
+};
+PriorityCustomer<span style="color:#f92672">::</span>PriorityCustomer(<span style="color:#66d9ef">const</span> PriorityCustomer<span style="color:#f92672">&amp;</span> rhs)<span style="color:#f92672">:</span>priority(rhs.priority){
+    logCall(<span style="color:#e6db74">&#34;PriorityCustomer copy constructor&#34;</span>);
+}
+PriorityCustomer<span style="color:#f92672">&amp;</span> PriorityCustomer<span style="color:#f92672">::</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> PriorityCustomer<span style="color:#f92672">&amp;</span> rhs){
+    logCall(<span style="color:#e6db74">&#34;PriorityCustomer copy assignment operator&#34;</span>);
+    priority<span style="color:#f92672">=</span>rhs.priority;
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+}
+<span style="color:#75715e">//PriorityCustomer的copying函数看起来好像复制了PriorityCustomer内的每一个函数，但是他们复制了PriorityCustomer声明的成员变量，但是每个PriorityCustomer还内含它所继承的Customer成员变量副本，而这些成员变量却未被复制。PriorityCustomer的copy构造函数并没有指定实参传给其base class构造函数(即它没有再它的成员初值列中提到Customer)，
+</span></code></pre></div><p>某些时候，为子类撰写copying函数并复制其基类所有成分时，某些成分往往是private的，所以无法直接访问它们，你应该让子类的copying函数调用相应的基类函数。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">PriorityCustomer<span style="color:#f92672">::</span>PriorityCustomer(<span style="color:#66d9ef">const</span> PriorityCustomer<span style="color:#f92672">&amp;</span> rhs)<span style="color:#f92672">:</span>Customer(rhs),priority(rhs.priority){
+    <span style="color:#75715e">//Customer(rhs)是调用基类的copy构造函数
+</span><span style="color:#75715e"></span>    logCall(<span style="color:#e6db74">&#34;PriorityCustomer copy constructor&#34;</span>);
+}
+PriorityCustomer<span style="color:#f92672">&amp;</span> PriorityCustomer<span style="color:#f92672">::</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> PritorityCustomer<span style="color:#f92672">&amp;</span> rhs){
+    logCall(<span style="color:#e6db74">&#34;PriorityCustomer copy assignment operator&#34;</span>);
+    Customer<span style="color:#f92672">::</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(rhs);<span style="color:#75715e">//对基类成分进行赋值动作
+</span><span style="color:#75715e"></span>    priority<span style="color:#f92672">=</span>rhs.priority;
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+}
+</code></pre></div><p>同时需要注意，令copy assignment操作符调用copy构造函数是不合理的，这就像试图构造一个已经存在的对象。这是有明显错误的。所以不该令copy assignment操作符调用copy构造函数。</p>
+<p>反之，令copy构造函数调用copy assignment操作符同样无意义。构造函数用来初始化新对象，而assignment操作符只施加于初始化对象身上。对一个尚未构造好的对象赋值是错误的。</p>
+<p>如果你发现copy构造函数和copy assignment操作符有相近的代码，消除重复代码的做法是，建立一个新的成员函数给两者调用。这样的函数往往是private的，这个策略可以安全的消除copy构造函数和copy assignment操作符之间代码重复。</p>
+<p><strong>请记住：</strong></p>
+<ul>
+<li>copying函数应该确保复制对象内所有成员变量及所有基类成分</li>
+<li>不要尝试以某个copying函数实现另一个copying函数，应该将共同机能放进第三个函数，并由两个copying函数共同调用。</li>
+</ul>
+
+                        </div>
+
+                        <div class="post-meta meta-tags">
+                            
+                            没有标签
+                            
+                        </div>
+                    </article>
+                    
+                    <div id="comments"><span class="widget-title"></span></div>
+
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        
+    
+<form id="search" action="https://www.google.com/search" method="get" accept-charset="utf-8" target="_blank">
+    <input type="text" name="q" maxlength="255" placeholder="搜索...">
+    <input type="hidden" name="sitesearch" value="">
+    <button type="submit" class="submit icon-search"></button>
+</form>
+
+
+
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+        <ul class="widget-list">
+            
+            <li>
+                <a href="/categories/c&#43;&#43;">
+                    c&#43;&#43; (5)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/markdown">
+                    markdown (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/unity">
+                    unity (4)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E4%B9%A6%E5%8D%95">
+                    书单 (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">
+                    统计学习方法 (10)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%86%E8%A7%89">
+                    视觉 (6)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">
+                    解决方案 (16)
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+      &copy; 2021 <a rel="nofollow" href="https://lxli1996.github.io"></a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io">Hugo</a> &amp; <a rel="nofollow noreferer noopener" href="https://github.com/JokerQyou/maupassant-hugo">maupassant theme</a>.
+    </div>
+</footer>
+
+<script type="text/javascript" src="/js/app.js" defer></script>
+
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' defer></script>
+
+
+</body>
+</html>
