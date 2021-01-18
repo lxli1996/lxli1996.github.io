@@ -6,7 +6,29 @@
     <description>Recent content on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
-    <lastBuildDate>Fri, 15 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 18 Jan 2021 00:00:00 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>effective C&#43;&#43; 3</title>
+      <link>https://lxli1996.github.io/post/effective-c&#43;&#43;2/</link>
+      <pubDate>Mon, 18 Jan 2021 00:00:00 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/effective-c&#43;&#43;2/</guid>
+      <description>本文的相关术语使用&amp;laquo;effective C++&amp;raquo;中的表示方法。
+资源管理 所谓资源，就是一旦使用，将来必须还给系统，否则就会产生糟糕的事情。例如C++常用的动态内存分配，不归还内存，就会发生内存泄漏。当然内存只是资源的一种，资源还包括文件描述器，互斥锁，数据库连接，网络sockets等。
+条款13:以对象管理资源 假设我们使用一个用来建模投资行为的程序，其中各种投资类型继承自一个类Investment。
+class Investment{...};//投资类型，继承体系中的根类 假设程序通过一个工厂函数提供我们某特定的Investment对象。
+Investment* creatInvestment();//返回指针，指向Investment继承体系内的动态分配对象。 //creatInvestment的调用端有责任删除它产生的对象，现在有一f函数执行这个职责 void f(){ Investment* pInv=creatInvestment();//调用工厂函数  ... delete pInv;//释放pInv所指对象 } 这个函数看起来没问题，但是我们都知道，在若干情况下，程序可能在&amp;hellip;位置就跳出。delete并没有被执行。
+为确保createInvestment返回的资源总是被释放，我们需要将资源放入对象内，当控制流离开f，该对象的析构函数会自动释放那些资源。
+在C++98中，标准程序库提供了auto_ptr正是针对这种形势设计的产品。auto_ptr是一个类指针对象，也即智能指针，其析构函数自动对其所指对象调用delete。下面的例子是如何使用auto_ptr以避免f函数潜在的资源泄漏。
+void f(){ std::auto_ptr&amp;lt;Investment&amp;gt; pInv(createInvestment()); ... //当超过作用域时，通过auto_ptr的析构函数自动删除pInv } 这个简单的例子展示了以对象管理资源的两个想法：
+ 获得资源后立刻放进管理对象内。以上代码中creatInvestment返回的资源被当作管理者auto_ptr的初值。实际上以对象管理资源的观念称为资源取得时便初始化(RAII)。 管理对象运用析构函数确保资源被释放。不论控制流如何离开区块，一旦对象被销毁(例如当对象离开作用域)，其析构函数自然会被自动调用，于是资源被释放。  同时需要注意，不能让多个auto_ptr同时指向同一对象，如果这样，对象会被删除一次以上，结果导致未定义行为。为了预防这个问题，auto_ptr有一个特殊的性质，若通过copy构造函数或copy assignment操作符复制他们，他们会变为null，复制所得的指针将取得资源的唯一拥有权。
+std::auto_ptr&amp;lt;Investment&amp;gt; pInv1(createInvestment());//pInv1指向createInvestment返回对象 std::auto_ptr&amp;lt;Investment&amp;gt; pInv2(pInv1);//现在pInv2指向对象，pInv1设为null pInv1=pInv2;//现在pInv1指向对象，pInv2设为null 在C++11中，有更好的替代方案：std::unique_ptr,std::shared_ptr,std::weak_ptr
+请记住：
+ 为防止资源泄漏，请使用RAII对象，他们在构造函数中获得资源并在析构函数中释放资源 两个常被使用的RAII 类是tr1::shared_ptr和auto_ptr。前者通常是较好选择，因为其copy行为比较直观。若选择auto_ptr，复制动作会使它(被复制物)指向null。  条款14:在资源管理类中小心coping行为 假如你希望根据RAII建立一个类来管理锁，众所周知Mutex的互斥器对象，有lock和unlock两个函数
+class Lock{ public: explicit Lock(Mutex* pm):mutexPtr(pm){ lock(mutexPtr); } ~lock(){unlock(mutexPtr);} private: Mutex *mutexPtr; } 客户使用Lock的用法符合RAII
+Mutex m;//定义需要的互斥器 ... { Lock ml(&amp;amp;m); //超出作用域，自动解锁 } //但是当Lock对象被复制会发生什么 Lock ml1(&amp;amp;m);//锁定m Lock ml2(ml1);//将ml1复制到ml2身上，这会发生什么？ 对于RAII对象被复制，大多数你会选择，以下两种可能</description>
+    </item>
+    
     <item>
       <title>effective C&#43;&#43; 2</title>
       <link>https://lxli1996.github.io/post/effective-c&#43;&#43;1/</link>

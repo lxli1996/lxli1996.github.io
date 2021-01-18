@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="zh-hans">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.79.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>effective C&#43;&#43; 3 - </title>
+    <meta property="og:title" content="effective C&#43;&#43; 3 - ">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2021-01-18T00:00:00&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2021-01-18T00:00:00&#43;08:00">
+        
+    <meta name="description" content="effective C&#43;&#43;
+">
+        
+    <meta name="author" content="">
+    <meta property="og:url" content="https://lxli1996.github.io/post/effective-c&#43;&#43;2/">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    </head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://lxli1996.github.io">
+                        
+                    </a>
+                
+                
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://lxli1996.github.io">首页</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">effective C&#43;&#43; 3</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2021年1月18日
+                            00:00
+                        </date>
+                        
+                        <div class="post-meta meta-category">
+                            ，归类于
+                            
+                                <a href="/categories/c&#43;&#43;">C&#43;&#43;</a>
+                            
+                        </div>
+                        <aside id="toc" class="dismissed">
+                            <span class="toc-title">目录 <a href="#" class="toc-dismiss"></a></span>
+                            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#资源管理">资源管理</a>
+      <ul>
+        <li><a href="#条款13以对象管理资源">条款13:以对象管理资源</a></li>
+        <li><a href="#条款14在资源管理类中小心coping行为">条款14:在资源管理类中小心coping行为</a></li>
+        <li><a href="#条款15在资源管理类中提供对原始资源的访问">条款15:在资源管理类中提供对原始资源的访问</a></li>
+        <li><a href="#条款16成对使用new和delete时要采取相同形式">条款16:成对使用new和delete时要采取相同形式</a></li>
+        <li><a href="#条款17以独立语句将newed对象置入智能指针">条款17:以独立语句将newed对象置入智能指针</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+                        </aside><div class="post-content">
+                            <p>本文的相关术语使用&laquo;effective C++&raquo;中的表示方法。</p>
+<h2 id="资源管理">资源管理</h2>
+<p>所谓资源，就是一旦使用，将来必须还给系统，否则就会产生糟糕的事情。例如C++常用的动态内存分配，不归还内存，就会发生内存泄漏。当然内存只是资源的一种，资源还包括文件描述器，互斥锁，数据库连接，网络sockets等。</p>
+<h3 id="条款13以对象管理资源">条款13:以对象管理资源</h3>
+<p>假设我们使用一个用来建模投资行为的程序，其中各种投资类型继承自一个类Investment。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Investment</span>{...};<span style="color:#75715e">//投资类型，继承体系中的根类
+</span></code></pre></div><p>假设程序通过一个工厂函数提供我们某特定的Investment对象。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Investment<span style="color:#f92672">*</span> <span style="color:#a6e22e">creatInvestment</span>();<span style="color:#75715e">//返回指针，指向Investment继承体系内的动态分配对象。
+</span><span style="color:#75715e">//creatInvestment的调用端有责任删除它产生的对象，现在有一f函数执行这个职责
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){
+    Investment<span style="color:#f92672">*</span> pInv<span style="color:#f92672">=</span>creatInvestment();<span style="color:#75715e">//调用工厂函数
+</span><span style="color:#75715e"></span>    ...
+    <span style="color:#66d9ef">delete</span> pInv;<span style="color:#75715e">//释放pInv所指对象
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>这个函数看起来没问题，但是我们都知道，在若干情况下，程序可能在&hellip;位置就跳出。delete并没有被执行。</p>
+<p>为确保createInvestment返回的资源总是被释放，我们需要将资源放入对象内，当控制流离开f，该对象的析构函数会自动释放那些资源。</p>
+<p>在C++98中，标准程序库提供了auto_ptr正是针对这种形势设计的产品。auto_ptr是一个类指针对象，也即智能指针，其析构函数自动对其所指对象调用delete。下面的例子是如何使用auto_ptr以避免f函数潜在的资源泄漏。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(){
+    std<span style="color:#f92672">::</span>auto_ptr<span style="color:#f92672">&lt;</span>Investment<span style="color:#f92672">&gt;</span> pInv(createInvestment());
+    ...
+    <span style="color:#75715e">//当超过作用域时，通过auto_ptr的析构函数自动删除pInv
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>这个简单的例子展示了以对象管理资源的两个想法：</p>
+<ul>
+<li>获得资源后立刻放进管理对象内。以上代码中creatInvestment返回的资源被当作管理者auto_ptr的初值。实际上以对象管理资源的观念称为<strong>资源取得时便初始化(RAII)</strong>。</li>
+<li>管理对象运用析构函数确保资源被释放。不论控制流如何离开区块，一旦对象被销毁(例如当对象离开作用域)，其析构函数自然会被自动调用，于是资源被释放。</li>
+</ul>
+<p>同时需要注意，不能让多个auto_ptr同时指向同一对象，如果这样，对象会被删除一次以上，结果导致未定义行为。为了预防这个问题，auto_ptr有一个特殊的性质，若通过copy构造函数或copy assignment操作符复制他们，他们会变为null，复制所得的指针将取得资源的唯一拥有权。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>auto_ptr<span style="color:#f92672">&lt;</span>Investment<span style="color:#f92672">&gt;</span> pInv1(createInvestment());<span style="color:#75715e">//pInv1指向createInvestment返回对象
+</span><span style="color:#75715e"></span>std<span style="color:#f92672">::</span>auto_ptr<span style="color:#f92672">&lt;</span>Investment<span style="color:#f92672">&gt;</span> pInv2(pInv1);<span style="color:#75715e">//现在pInv2指向对象，pInv1设为null
+</span><span style="color:#75715e"></span>pInv1<span style="color:#f92672">=</span>pInv2;<span style="color:#75715e">//现在pInv1指向对象，pInv2设为null
+</span></code></pre></div><p><strong>在C++11中，有更好的替代方案：std::unique_ptr,std::shared_ptr,std::weak_ptr</strong></p>
+<p><strong>请记住：</strong></p>
+<ul>
+<li>为防止资源泄漏，请使用RAII对象，他们在构造函数中获得资源并在析构函数中释放资源</li>
+<li>两个常被使用的RAII 类是tr1::shared_ptr和auto_ptr。前者通常是较好选择，因为其copy行为比较直观。若选择auto_ptr，复制动作会使它(被复制物)指向null。</li>
+</ul>
+<h3 id="条款14在资源管理类中小心coping行为">条款14:在资源管理类中小心coping行为</h3>
+<p>假如你希望根据RAII建立一个类来管理锁，众所周知Mutex的互斥器对象，有lock和unlock两个函数</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Lock</span>{
+    <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">explicit</span> Lock(Mutex<span style="color:#f92672">*</span> pm)<span style="color:#f92672">:</span>mutexPtr(pm){
+        lock(mutexPtr);
+    }
+    <span style="color:#f92672">~</span>lock(){unlock(mutexPtr);}
+    <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    Mutex <span style="color:#f92672">*</span>mutexPtr;
+}
+</code></pre></div><p>客户使用Lock的用法符合RAII</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Mutex m;<span style="color:#75715e">//定义需要的互斥器
+</span><span style="color:#75715e"></span>...
+{
+    Lock <span style="color:#a6e22e">ml</span>(<span style="color:#f92672">&amp;</span>m);
+    <span style="color:#75715e">//超出作用域，自动解锁
+</span><span style="color:#75715e"></span>}
+<span style="color:#75715e">//但是当Lock对象被复制会发生什么
+</span><span style="color:#75715e"></span>Lock <span style="color:#a6e22e">ml1</span>(<span style="color:#f92672">&amp;</span>m);<span style="color:#75715e">//锁定m
+</span><span style="color:#75715e"></span>Lock <span style="color:#a6e22e">ml2</span>(ml1);<span style="color:#75715e">//将ml1复制到ml2身上，这会发生什么？
+</span></code></pre></div><p>对于RAII对象被复制，大多数你会选择，以下两种可能</p>
+<ul>
+<li>
+<p>禁止复制。许多时候允许RAII对象被复制并不合理。对象Lock这样的类是有可能的，因为很少能够合理拥有同步化基础器物(synchronization primitives)的复件。如果复制动作对RAII是不合理的，你应该禁止它，如将copying操作声明为private。对Lock而言看起来是这样的</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Lock</span><span style="color:#f92672">:</span><span style="color:#66d9ef">private</span> Uncopyable{
+    <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    ...
+};
+</code></pre></div></li>
+<li>
+<p>对底层资源使用引用计数法(reference-count)。有时候我们希望保有资源，直到他的最后一个使用者被销毁，这种情况下复制RAII对象时，应该将资源的被引用数递增</p>
+</li>
+<li>
+<p>复制底部资源，有时候，只有你喜欢，可以针对一份资源拥有任意数量的复件。而你需要资源管理类的唯一理由是，当你不再需要某个复件时确保它被释放。在此情况下复制资源管理对象，应该同时复制其所包括的资源，也即复制资源管理对象时，进行的是深度拷贝。</p>
+</li>
+<li>
+<p>转移底部资源的拥有权。某些罕见场合下，你可能希望确保永远只有一个RAII对象指向一个未被加工的资源。即使RAII对象被复制依然如此，此时资源的拥有权会从被复制物转移到目标物。</p>
+</li>
+</ul>
+<p><strong>请记住：</strong></p>
+<ul>
+<li>复制RAII对象必须一并复制它所管理的资源，所以资源的copying行为决定RAII对象的copying行为。</li>
+<li>普遍而常见的RAII类copying行为是，抑制copying，施行引用计数法(reference counting)。不过其他行为也都可能被实现。</li>
+</ul>
+<h3 id="条款15在资源管理类中提供对原始资源的访问">条款15:在资源管理类中提供对原始资源的访问</h3>
+<p>资源管理类是解决内存泄漏的有效方法，但是很多时候，我们都需要直接访问原始资源。</p>
+<p>如，使用智能指针auto_ptr和shared_ptr保存factory函数如createInvestment的调用结果。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>tr1<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Investment<span style="color:#f92672">&gt;</span> pInv(createInvestment());
+<span style="color:#75715e">//假设你希望以某个函数处理Investment对象，
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">daysHeld</span>(<span style="color:#66d9ef">const</span> Investment<span style="color:#f92672">*</span> pi);
+<span style="color:#75715e">//如果你想这么调用它
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> days<span style="color:#f92672">=</span>daysHeld(pInv);<span style="color:#75715e">//错误
+</span><span style="color:#75715e">//这样是不能通过编译的，因为daysHeld需要的是Investment*指针，你传给他的是个类型为tr1::shared_ptr&lt;Investment&gt;的对象
+</span></code></pre></div><p>这时候你需要一个函数将RAII类对象(如tr1::shared_ptr)转换为其所内含的原始资源(如Investment*)，有两个做法可以达成目标，显式转换和隐式转换。tr1::shared_ptr和auto_ptr都提供一个get成员函数，用来执行显式转换，也就是返回智能指针内部的原始指针的复件。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">int</span> days<span style="color:#f92672">=</span>daysHeld(pInv.get());<span style="color:#75715e">//将pInv内的原始指针传给daysHeld
+</span></code></pre></div><p>同所有智能指针一样，tr1::shared_ptr和auto_ptr也重载了指针取值操作符(operator-&gt;和operator*)，他们允许隐式转换到底部原始指针：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Investment</span> {<span style="color:#75715e">// investment 继承体系的根类
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">bool</span> isTaxFree() cosnt;
+};
+Investment<span style="color:#f92672">*</span> <span style="color:#a6e22e">createInvestment</span>();<span style="color:#75715e">// 工厂函数
+</span><span style="color:#75715e"></span>std<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Investment<span style="color:#f92672">&gt;</span> pi1(createInvestment());<span style="color:#75715e">// 使用 std::shared_ptr 管理资源
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">bool</span> taxable1 <span style="color:#f92672">=</span> <span style="color:#f92672">!</span>(pi1<span style="color:#f92672">-&gt;</span>isTaxFree());<span style="color:#75715e">// 通过 operator-&gt; 访问资源
+</span><span style="color:#75715e"></span>std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>Investment<span style="color:#f92672">&gt;</span> pi2(createInvestment());<span style="color:#75715e">// 使用 std::shared_ptr 管理资源
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">bool</span> taxable2 <span style="color:#f92672">=</span> <span style="color:#f92672">!</span>((<span style="color:#f92672">*</span>pi1).isTaxFree());<span style="color:#75715e">// 通过 operator* 访问资源
+</span></code></pre></div><p>有时候还必须取得RAII对象内的原始资源，做法是提供一个隐式转换函数。考虑下面这个用于字体的RAII类</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">FontHandle <span style="color:#a6e22e">getFont</span>();
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">releaseFont</span>(FontHandle fh);
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Font</span> {<span style="color:#75715e">// RAII class
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">explicit</span> Font(FontHandle fh) <span style="color:#f92672">:</span> f(fh) {}  <span style="color:#75715e">// 获取资源,采用值传递
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">~</span>Font() { releaseFont(f); }              <span style="color:#75715e">// 释放资源
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    FontHandle f;  <span style="color:#75715e">// 原始字体资源
+</span><span style="color:#75715e"></span>};
+</code></pre></div><p>当存在大量与字体相关的C API，他们处理的是FontHandles，那么将Font对象转换为FontHandle是一种很频繁的需求。Font class可为次提供一个显式转换函数，如get那样：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Font</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    FontHandle get() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> f; }<span style="color:#75715e">// 显式转换函数
+</span><span style="color:#75715e"></span>    ...
+};
+<span style="color:#75715e">//不幸的是，这使用户每当想使用API时，必须调用get：
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">changeFontSize</span>(FontHandle f,<span style="color:#66d9ef">int</span> newSize);<span style="color:#75715e">//C API
+</span><span style="color:#75715e"></span>Font <span style="color:#a6e22e">f</span>(getFont());
+<span style="color:#66d9ef">int</span> newFontSize;
+changeFontSize(f.get(),newFontSize);<span style="color:#75715e">//将Font转换为FontHandle
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">//另一种方法是令Font提供隐式转换函数，转型为FontHandle：
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Font</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">operator</span> FontHandle() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> f; }<span style="color:#75715e">// 隐式转换函数
+</span><span style="color:#75715e"></span>    ...
+};
+<span style="color:#75715e">//这使得用户调用C API时比较轻松且自然
+</span><span style="color:#75715e"></span>Font <span style="color:#a6e22e">f</span>(getFont());
+<span style="color:#66d9ef">int</span> newFontSize;
+changeFontSize(f,newFontSize);<span style="color:#75715e">//将Font隐式转换为FontHandle
+</span></code></pre></div><p>但是这个隐式转换会增加错误发生的机会。例如客户可能会在需要Font时意外创建一个FontHandle：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Font <span style="color:#a6e22e">f1</span>(getFont());
+FontHandle f2<span style="color:#f92672">=</span>f1;<span style="color:#75715e">//原意是拷贝一个Font对象，却反而将f1隐式转换为其底部的FontHandle，
+</span><span style="color:#75715e">//然后才复制它
+</span><span style="color:#75715e">//上面的程序有个FontHandle由Font对象f1管理，但是那个FontHandle也可以通过直接使用f2取得，
+</span><span style="color:#75715e">//那样做经常会出现问题，例如当f1被销毁，字体被释放，而f2也成为虚吊的dangle
+</span></code></pre></div><p><strong>请记住：</strong></p>
+<ul>
+<li>APIs往往要求访问原始资源，所以每一个RAII 类应该提供一个取得其所管理资源的方法</li>
+<li>对原始资源的访问可能经由显式转换或隐式转换，一般而言显式转换比较安全，但隐式转换对客户比较方便。</li>
+</ul>
+<h3 id="条款16成对使用new和delete时要采取相同形式">条款16:成对使用new和delete时要采取相同形式</h3>
+<p>以下动作有什么错？</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>string<span style="color:#f92672">*</span> stringArray<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> std<span style="color:#f92672">::</span>string[<span style="color:#ae81ff">100</span>];
+<span style="color:#66d9ef">delete</span> stringArray;
+</code></pre></div><p>每件事看起来都正常，使用了new，也搭配了delete。但还是有某样东西完全错误：程序行为不明确。最低限度，stringArray所含的100个string对象中的99个不太可能被适当删除，因为它们的析构函数很可能没被调用。</p>
+<p>当你使用new，即通过new动态生成一个对象，有两件事发生。</p>
+<ul>
+<li>内存被分配出来(通过名为operator new的函数)</li>
+<li>针对此内存会有一个或多个构造函数被调用。</li>
+</ul>
+<p>当你使用delete，也有两件事发生。</p>
+<ul>
+<li>针对此内存有一个或多个析构函数被调用</li>
+<li>然后内存才被释放(通过名为operator delete函数)。delete的最大问题在于，即将被删除的内存之中究竟存有多少对象，这个问题的答案决定了有多少析构函数被调用。</li>
+</ul>
+<p>对于被删除那个指针，所指的是单一对象或对象数组？这是个必不可缺的问题，因为单一对象的内存布局一般而言不同于数组的内存布局。更明确的说，数组所用内存通常还包括数组大小的记录，以便delete知道需要调用多少析构函数。单一对象的内存则没有这笔记录，你可以把两种不同的内存布局想象为如下，其中n是数组大小：</p>
+<p>单一对象：Object</p>
+<p>对象数组：n，Object，Object，Object。。。</p>
+<p>当你对着一个指针使用delete，唯一能够让delete知道内存中是否存在一个数组大小记录的办法是：由你来告诉它。使用delete时加上中括号，delete便认为指针指向一个数组，否则认定指针指向单一对象。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>string<span style="color:#f92672">*</span> stringPtr1<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> std<span style="color:#f92672">::</span>string;
+std<span style="color:#f92672">::</span>string<span style="color:#f92672">*</span> stringPtr2<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> std<span style="color:#f92672">::</span>string[<span style="color:#ae81ff">100</span>];
+<span style="color:#66d9ef">delete</span> stringPtr1;<span style="color:#75715e">//删除一个对象
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">delete</span> [] stringPtr2;<span style="color:#75715e">//删除一个由对象组成的数组
+</span></code></pre></div><p>如果对上面stringPtr1使用delete[]，会发生肾么事？假设内存布局如上，delete会读取若干内存并将它解释为数组大小，然后开始多次调用析构函数，浑然不知它所处理的那块内存不但不是一个数组，也或许并未持有它正忙着销毁的那种类型的对象。</p>
+<p><strong>请记住：</strong></p>
+<p>如果你在new表达式中使用[]，必须在相应的delete表达式中也使用[]。如果你在new表达式中不使用[]，一定不要在相应的delete表达式中使用[]。</p>
+<h3 id="条款17以独立语句将newed对象置入智能指针">条款17:以独立语句将newed对象置入智能指针</h3>
+<p>假设我们有个函数用来揭示处理程序的优先权，另一个函数用来在某动态分配所得Widget上进行某些带有优先权的处理。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">priority</span>();
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">processWidget</span>(std<span style="color:#f92672">::</span>tr1<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span> pw,<span style="color:#66d9ef">int</span> priority);
+<span style="color:#75715e">//由于谨记以对象管理资源，processWidget决定对其动态分配得来的Widget运用智能指针
+</span><span style="color:#75715e">//现在考虑调用processWidget
+</span><span style="color:#75715e"></span>processWidget(<span style="color:#66d9ef">new</span> Widget,priority());
+<span style="color:#75715e">//但是这个调用形式不能通过编译，shared_ptr构造函数需要一个原始指针，但是这个构造函数是个explicit构造函数，无法进行隐式转换，
+</span><span style="color:#75715e">//将来自new Widget的原始指针转换为processWidget所要求的tr1::shared_ptr。如果写成这样就可以通过编译：
+</span><span style="color:#75715e"></span>processWidget(std<span style="color:#f92672">::</span>tr1<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">new</span> Widget),priority());
+</code></pre></div><p>令人惊讶的是，虽然我们在此使用对象管理式资源，上述调用却可能泄露资源。</p>
+<p>编译器产出一个processWidget调用码前，必须先核算即将被传递的各个实参。上述第二个实参只是一个单独的对priority函数的调用，但是第一实参<code>std::tr1::shared_ptr&lt;Widget&gt;(new Widget)</code>由两部分组成：</p>
+<ul>
+<li>执行new Widget表达式</li>
+<li>调用tr1::shared_ptr构造函数</li>
+</ul>
+<p>于是在调用processWidget之前，编译器必须创建代码，做以下三件事：</p>
+<ul>
+<li>priority</li>
+<li>执行new Widget</li>
+<li>调用tr1::shared_ptr构造函数</li>
+</ul>
+<p>C++编译器以什么样的次序完成这些事情呢？弹性很大。可以确定的是new Widget一定执行与tr1::shared_ptr构造函数被调用之前，因为这个表达式的结果还要被传递作为tr1::shared_ptr构造函数的一个实参，但是对priority()的调用则可以排在第一或第二或第三执行，假如在第二位执行，则获得如下操作序列：</p>
+<ul>
+<li>执行new Widget</li>
+<li>调用priority</li>
+<li>调用tr1::shared_ptr构造函数</li>
+</ul>
+<p>当对priority调用出现异常，在此情况下，new Widget返回的指针将会遗失，因为它没有被放入tr1::shared_ptr内，后者是我们为了防卫资源泄漏的武器。</p>
+<p>解决这类问题最简单的方法是，使用分离语句，分别写出1.创建Widget，2.将其置入一个智能指针内，然后再把那个智能指针传给processWidget。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">std<span style="color:#f92672">::</span>tr1<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span> pw(<span style="color:#66d9ef">new</span> Widget);<span style="color:#75715e">//在单独语句内，以智能指针存储newed获得的对象
+</span><span style="color:#75715e"></span>processWidget(pw,priority());<span style="color:#75715e">//这个调用不至于造成泄漏
+</span></code></pre></div><p>这个方法之所以行得通，因为编译器对于跨越语句的各项操作没有重新排列的自由。</p>
+<p><strong>请记住：</strong></p>
+<p>以独立语句将newed对象存储于(置于)智能指针内，如果不这样做，一旦异常被抛出，有可能导致难以察觉的资源泄漏。</p>
+
+                        </div>
+
+                        <div class="post-meta meta-tags">
+                            
+                            没有标签
+                            
+                        </div>
+                    </article>
+                    
+                    <div id="comments"><span class="widget-title"></span></div>
+
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        
+    
+<form id="search" action="https://www.google.com/search" method="get" accept-charset="utf-8" target="_blank">
+    <input type="text" name="q" maxlength="255" placeholder="搜索...">
+    <input type="hidden" name="sitesearch" value="">
+    <button type="submit" class="submit icon-search"></button>
+</form>
+
+
+
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+        <ul class="widget-list">
+            
+            <li>
+                <a href="/categories/c&#43;&#43;">
+                    c&#43;&#43; (6)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/markdown">
+                    markdown (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/unity">
+                    unity (4)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E4%B9%A6%E5%8D%95">
+                    书单 (2)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95">
+                    统计学习方法 (10)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%86%E8%A7%89">
+                    视觉 (6)
+                </a>
+            </li>
+            
+            <li>
+                <a href="/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">
+                    解决方案 (16)
+                </a>
+            </li>
+            
+        </ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+      &copy; 2021 <a rel="nofollow" href="https://lxli1996.github.io"></a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io">Hugo</a> &amp; <a rel="nofollow noreferer noopener" href="https://github.com/JokerQyou/maupassant-hugo">maupassant theme</a>.
+    </div>
+</footer>
+
+<script type="text/javascript" src="/js/app.js" defer></script>
+
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' defer></script>
+
+
+</body>
+</html>
