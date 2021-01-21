@@ -6,7 +6,19 @@
     <description>Recent content in 视觉 on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-hans</language>
-    <lastBuildDate>Fri, 11 Dec 2020 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/%E8%A7%86%E8%A7%89/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 21 Jan 2021 14:03:43 +0800</lastBuildDate><atom:link href="https://lxli1996.github.io/categories/%E8%A7%86%E8%A7%89/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>多尺度Marker</title>
+      <link>https://lxli1996.github.io/post/%E5%A4%9A%E5%B0%BA%E5%BA%A6marker/</link>
+      <pubDate>Thu, 21 Jan 2021 14:03:43 +0800</pubDate>
+      
+      <guid>https://lxli1996.github.io/post/%E5%A4%9A%E5%B0%BA%E5%BA%A6marker/</guid>
+      <description>论文：
+A Multiple-Camera System Calibration Toolbox Using A Feature Descriptor-Based Calibration Pattern
+生成Marker的Matleb代码
+N=600; M=800; pattern=0; count=0; m=4; while m&amp;lt;M n=round(N/M*m); noise=rand(n,m); noise=imresize(noise,[N,M]); pattern=pattern+noise; count=count+1; m=m*2; end pattern=pattern./count; pattern=histeq(pattern); imshow(pattern); </description>
+    </item>
+    
     <item>
       <title>非线性优化中的信息矩阵</title>
       <link>https://lxli1996.github.io/post/%E9%9D%9E%E7%BA%BF%E6%80%A7%E4%BC%98%E5%8C%96%E4%B8%AD%E7%9A%84%E4%BF%A1%E6%81%AF%E7%9F%A9%E9%98%B5/</link>
